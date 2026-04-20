@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackPass</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #1D9E75;
+      --accent-hover: #178a64;
+      --accent-light: #E1F5EE;
+      --accent-dark: #085041;
+      --danger: #E24B4A;
+      --danger-light: #FCEBEB;
+      --danger-dark: #791F1F;
+      --warn-light: #FAEEDA;
+      --warn-dark: #412402;
+      --warn: #BA7517;
+      --bg: #f5f5f3;
+      --surface: #ffffff;
+      --surface-2: #f1efe8;
+      --border: rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.18);
+      --text: #1a1a18;
+      --text-2: #6b6b67;
+      --text-3: #9b9b97;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111110;
+        --surface: #1c1c1a;
+        --surface-2: #242422;
+        --border: rgba(255,255,255,0.08);
+        --border-md: rgba(255,255,255,0.16);
+        --text: #f0ede8;
+        --text-2: #9b9b97;
+        --text-3: #6b6b67;
+        --accent-light: #04342C;
+        --accent-dark: #9FE1CB;
+        --danger-light: #501313;
+        --danger-dark: #F7C1C1;
+        --warn-light: #2c1a00;
+        --warn-dark: #FAC775;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ─── PAGES ─── */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: flex; flex-direction: column; }
+
+    /* ─── AUTH PAGE ─── */
+    #page-auth {
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: var(--bg);
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2.5rem;
+      justify-content: center;
+    }
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+    .logo-text span { color: var(--accent); }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      padding: 3px;
+      margin-bottom: 1.5rem;
+      border: 0.5px solid var(--border);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 7px;
+      border: none;
+      background: none;
+      color: var(--text-2);
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .auth-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .col-span-2 { grid-column: span 2; }
+    .col-span-3 { grid-column: span 3; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      font-size: 12px;
+      color: var(--text-2);
+      font-weight: 500;
+    }
+
+    input, select {
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+      height: 38px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+    }
+    input::placeholder { color: var(--text-3); }
+    select option { background: var(--surface); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+      border: none;
+      height: 40px;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--accent); color: white; width: 100%; margin-top: 16px; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-outline {
+      background: transparent;
+      border: 0.5px solid var(--border-md);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: var(--surface-2); }
+    .btn-ghost {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      padding: 6px 10px;
+      height: auto;
+      font-size: 13px;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    .msg {
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      margin-top: 12px;
+      display: none;
+      line-height: 1.4;
+    }
+    .msg.visible { display: block; }
+    .msg.success { background: var(--accent-light); color: var(--accent-dark); border: 0.5px solid var(--accent); }
+    .msg.error   { background: var(--danger-light); color: var(--danger-dark); border: 0.5px solid var(--danger); }
+    .msg.warning { background: var(--warn-light);   color: var(--warn-dark);   border: 0.5px solid var(--warn); }
+
+    /* ─── SPINNER ─── */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── APP PAGE ─── */
+    #page-app { flex-direction: column; }
+
+    .app-header {
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .app-header .logo { margin-bottom: 0; justify-content: flex-start; }
+    .app-header .logo-icon { width: 28px; height: 28px; }
+    .app-header .logo-text { font-size: 17px; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .user-pill {
+      font-size: 13px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .user-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-content {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .section-header {
+      margin-bottom: 1.5rem;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .section-header p {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-top: 3px;
+    }
+
+    /* ─── RACE CARDS ─── */
+    .races-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .race-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .race-card:hover { border-color: var(--border-md); }
+
+    .race-card-header {
+      background: var(--accent);
+      padding: 1rem 1.25rem;
+      position: relative;
+    }
+    .race-km {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .race-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: white;
+      line-height: 1.3;
+    }
+
+    .race-card-body {
+      padding: 1rem 1.25rem;
+    }
+    .race-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+    .race-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+    }
+    .meta-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .badge-green { background: var(--accent-light); color: var(--accent-dark); }
+    .badge-gray  { background: var(--surface-2); color: var(--text-2); border: 0.5px solid var(--border-md); }
+
+    .race-card-footer {
+      padding: 0 1.25rem 1.25rem;
+    }
+    .btn-inscribir {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s;
+    }
+    .btn-inscribir:hover { background: var(--accent-hover); }
+    .btn-inscribir.inscripto {
+      background: var(--surface-2);
+      color: var(--accent);
+      border: 0.5px solid var(--accent);
+      cursor: default;
+    }
+    .btn-inscribir:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-2);
+    }
+    .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
+    .empty-state p { font-size: 14px; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      display: none;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 0.5px solid var(--border);
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 440px;
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 1.25rem;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.25rem;
+    }
+    .modal-actions .btn { flex: 1; margin-top: 0; }
+
+    /* ─── INSCRIPCIONES SECTION ─── */
+    .mis-inscripciones {
+      margin-top: 2.5rem;
+    }
+    .inscripcion-item {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .inscripcion-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .inscripcion-info { flex: 1; }
+    .inscripcion-name { font-size: 14px; font-weight: 500; }
+    .inscripcion-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .inscripcion-dorsal {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+
+    @media (max-width: 500px) {
+      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+      .col-span-2, .col-span-3 { grid-column: span 1; }
+      .races-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     AUTH PAGE
+════════════════════════════════════ -->
+<div id="page-auth" class="page active">
+  <div class="auth-box">
+
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+        <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      </svg>
+      <span class="logo-text">Track<span>Pass</span></span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showAuthTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" onclick="showAuthTab('registro')">Registrarse</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="form-login" class="auth-form active">
+      <div class="card">
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input type="text" id="login-mail" placeholder="tu@email.com" />
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" id="login-pass" placeholder="••••••••"
+            onkeydown="if(event.key==='Enter') doLogin()" />
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()" id="btn-login">Ingresar</button>
+        <div id="msg-login" class="msg"></div>
+      </div>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="form-registro" class="auth-form">
+      <div class="card">
+        <div class="form-grid-2">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" id="reg-nombre" placeholder="Juan" />
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" id="reg-apellido" placeholder="Pérez" />
+          </div>
+          <div class="field col-span-2">
+            <label>Correo electrónico</label>
+            <input type="text" id="reg-mail" placeholder="tu@email.com" />
+          </div>
+          <div class="field">
+            <label>DNI</label>
+            <input type="text" id="reg-dni" placeholder="12345678" />
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" id="reg-tel" placeholder="1122334455" />
+          </div>
+          <div class="field">
+            <label>Grupo sanguíneo</label>
+            <select id="reg-sangre">
+              <option value="">— Seleccionar —</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nacionalidad</label>
+            <input type="text" id="reg-nac" placeholder="Argentina" />
+          </div>
+          <div class="field">
+            <label>Sexo</label>
+            <select id="reg-sexo">
+              <option value="">— Seleccionar —</option>
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+              <option value="X">No binario</option>
+            </select>
+          </div>
+          <div class="field col-span-2">
+            <label>Contraseña</label>
+            <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" />
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="doRegistro()" id="btn-registro">Crear cuenta</button>
+        <div id="msg-registro" class="msg"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     APP PAGE
+════════════════════════════════════ -->
+<div id="page-app" class="page">
+
+  <header class="app-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+        <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      </svg>
+      <span class="logo-text">Track<span>Pass</span></span>
+    </div>
+    <div class="header-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">--</div>
+        <span id="user-name-header"></span>
+      </div>
+      <button class="btn btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="app-content">
+
+    <div class="section-header">
+      <h2>Carreras disponibles</h2>
+      <p>Anotate a las carreras activas y gestioná tus inscripciones.</p>
+    </div>
+
+    <div id="races-container">
+      <div class="empty-state"><p>Cargando carreras...</p></div>
+    </div>
+
+    <div class="mis-inscripciones">
+      <div class="section-header">
+        <h2>Mis inscripciones</h2>
+        <p>Carreras en las que ya estás anotado.</p>
+      </div>
+      <div id="inscripciones-container">
+        <div class="empty-state"><p>Cargando...</p></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL INSCRIPCIÓN
+════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-race-name">—</div>
+    <div class="modal-sub" id="modal-race-sub">—</div>
+    <div class="field">
+      <label>Categoría</label>
+      <select id="modal-categoria">
+        <option value="">— Seleccionar —</option>
+        <option value="General">General</option>
+        <option value="Sub-23">Sub-23</option>
+        <option value="Masters A (40-49)">Masters A (40-49)</option>
+        <option value="Masters B (50-59)">Masters B (50-59)</option>
+        <option value="Masters C (60+)">Masters C (60+)</option>
+      </select>
+    </div>
+    <div id="msg-modal" class="msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarInscripcion()" id="btn-confirmar" style="margin-top:0;">Confirmar inscripción</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Config ── */
+  const SB_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdWRiYnF3bGhzanFwY2tzcWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1Nzg0ODcsImV4cCI6MjA5MTE1NDQ4N30.E9iS731xTZMx-2qsN18eVCooyBN7BdigcDfkt5LUM64';
+
+  /* ── State ── */
+  let currentUser     = null;   // objeto usuario logueado
+  let selectedRaceId  = null;   // carrera elegida para inscripción
+
+  /* ── Supabase helper ── */
+  async function sb(path, opts = {}) {
+    const res = await fetch(SB_URL + '/rest/v1/' + path, {
+      ...opts,
+      headers: {
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        opts.prefer || 'return=representation',
+        ...(opts.headers || {})
+      }
+    });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  /* ── UI helpers ── */
+  function showMsg(id, type, html) {
+    const el = document.getElementById(id);
+    el.className = 'msg visible ' + type;
+    el.innerHTML = html;
+  }
+  function hideMsg(id) {
+    const el = document.getElementById(id);
+    el.className = 'msg';
+    el.innerHTML = '';
+  }
+  function setLoading(btnId, loading, label = '') {
+    const btn = document.getElementById(btnId);
+    if (loading) {
+      btn._orig    = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span>' + (label || 'Cargando...');
+      btn.disabled  = true;
+    } else {
+      btn.innerHTML = btn._orig || btn.innerHTML;
+      btn.disabled  = false;
+    }
+  }
+
+  /* ── Auth tabs ── */
+  function showAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'registro'));
+    });
+    document.getElementById('form-login').classList.toggle('active', tab === 'login');
+    document.getElementById('form-registro').classList.toggle('active', tab === 'registro');
+    hideMsg('msg-login');
+    hideMsg('msg-registro');
+  }
+
+  /* ── Page switcher ── */
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+  }
+
+  /* ═══════════════════════════════════
+     LOGIN
+  ═══════════════════════════════════ */
+  async function doLogin() {
+    const mail = document.getElementById('login-mail').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    if (!mail || !pass) { showMsg('msg-login', 'error', 'Completá mail y contraseña.'); return; }
+
+    setLoading('btn-login', true, 'Ingresando...');
+    try {
+      const { ok, data } = await sb(
+        `usuario?mail=eq.${encodeURIComponent(mail)}&contraseña=eq.${encodeURIComponent(pass)}&select=*`
+      );
+      if (!ok || !Array.isArray(data) || data.length === 0) {
+        showMsg('msg-login', 'error', 'Mail o contraseña incorrectos.');
+        return;
+      }
+      currentUser = data[0];
+      enterApp();
+    } catch (e) {
+      showMsg('msg-login', 'error', 'Error de red: ' + e.message);
+    } finally {
+      setLoading('btn-login', false);
+    }
+  }
+
+  /* ═══════════════════════════════════
+     REGISTRO
+  ═══════════════════════════════════ */
+  async function doRegistro() {
+    const nombre   = document.getElementById('reg-nombre').value.trim();
+    const apellido = document.getElementById('reg-apellido').value.trim();
+    const mail     = document.getElementById('reg-mail').value.trim();
+    const dni      = document.getElementById('reg-dni').value.trim();
+    const tel      = document.getElementById('reg-tel').value.trim();
+    const sangre   = document.getElementById('reg-sangre').value;
+    const nac      = document.getElementById('reg-nac').value.trim();
+    const sexo     = document.getElementById('reg-sexo').value;
+    const pass     = document.getElementById('reg-pass').value;
+
+    if (!nombre || !apellido || !mail || !dni || !pass) {
+      showMsg('msg-registro', 'error', 'Completá al menos nombre, apellido, mail, DNI y contraseña.');
+      return;
+    }
+    if (pass.length < 6) {
+      showMsg('msg-registro', 'error', 'La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    setLoading('btn-registro', true, 'Creando cuenta...');
+    try {
+      /* Verificar si el mail ya existe */
+      const { data: existe } = await sb(`usuario?mail=eq.${encodeURIComponent(mail)}&select=id_usuario`);
+      if (Array.isArray(existe) && existe.length > 0) {
+        showMsg('msg-registro', 'error', 'Ya existe una cuenta con ese mail.');
+        return;
+      }
+
+      /* Verificar si el DNI ya existe */
+      const { data: existeDni } = await sb(`usuario?dni=eq.${encodeURIComponent(dni)}&select=id_usuario`);
+      if (Array.isArray(existeDni) && existeDni.length > 0) {
+        showMsg('msg-registro', 'error', 'Ya existe una cuenta con ese DNI.');
+        return;
+      }
+
+      const payload = {
+        nombre, apellido, mail, dni,
+        ...(tel    ? { telefono: tel }           : {}),
+        ...(sangre ? { grupo_sanguineo: sangre } : {}),
+        ...(nac    ? { Nacionalidad: nac }        : {}),
+        ...(sexo   ? { Sexo: sexo }               : {}),
+        contraseña: pass
+      };
+
+      const { ok, data } = await sb('usuario', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        prefer: 'return=representation'
+      });
+
+      if (ok && Array.isArray(data) && data.length > 0) {
+        currentUser = data[0];
+        enterApp();
+      } else {
+        const errMsg = typeof data === 'object' ? (data.message || JSON.stringify(data)) : data;
+        showMsg('msg-registro', 'error', 'Error al crear cuenta: ' + errMsg);
+      }
+    } catch (e) {
+      showMsg('msg-registro', 'error', 'Error de red: ' + e.message);
+    } finally {
+      setLoading('btn-registro', false);
+    }
+  }
+
+  /* ═══════════════════════════════════
+     ENTER APP
+  ═══════════════════════════════════ */
+  function enterApp() {
+    /* Header */
+    const initials = ((currentUser.nombre || '?')[0] + (currentUser.apellido || '?')[0]).toUpperCase();
+    document.getElementById('user-avatar').textContent      = initials;
+    document.getElementById('user-name-header').textContent = currentUser.nombre + ' ' + currentUser.apellido;
+
+    showPage('app');
+    loadCarreras();
+    loadMisInscripciones();
+  }
+
+  /* ═══════════════════════════════════
+     LOGOUT
+  ═══════════════════════════════════ */
+  function doLogout() {
+    currentUser    = null;
+    selectedRaceId = null;
+    document.getElementById('login-mail').value = '';
+    document.getElementById('login-pass').value = '';
+    showAuthTab('login');
+    showPage('auth');
+  }
+
+  /* ═══════════════════════════════════
+     LOAD CARRERAS
+  ═══════════════════════════════════ */
+  async function loadCarreras() {
+    const container = document.getElementById('races-container');
+    container.innerHTML = '<div class="empty-state"><p>Cargando carreras...</p></div>';
+    try {
+      const { ok, data } = await sb(
+        'carreras?select=*&carrera_activa=eq.true&order=fecha_hora_largada.asc'
+      );
+      if (!ok || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No hay carreras activas en este momento.</p></div>';
+        return;
+      }
+
+      /* Traer inscripciones del usuario para saber en cuáles ya está */
+      const { data: mis } = await sb(
+        `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&select=id_carrera`
+      );
+      const inscriptosEn = new Set((mis || []).map(r => r.id_carrera));
+
+      container.innerHTML = '<div class="races-grid">' +
+        data.map(c => renderRaceCard(c, inscriptosEn.has(c.id_carrera))).join('') +
+        '</div>';
+    } catch (e) {
+      container.innerHTML = `<div class="empty-state"><p>Error al cargar carreras: ${e.message}</p></div>`;
+    }
+  }
+
+  function renderRaceCard(c, yaInscripto) {
+    const fecha = c.fecha_hora_largada
+      ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' })
+      : '—';
+    const hora = c.fecha_hora_largada
+      ? new Date(c.fecha_hora_largada).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' })
+      : '';
+    const km = c.kilometros ? c.kilometros + ' km' : '';
+
+    const btnHtml = yaInscripto
+      ? `<button class="btn-inscribir inscripto" disabled>Inscripto</button>`
+      : `<button class="btn-inscribir" onclick="openModal(${c.id_carrera}, '${escHtml(c.nombre_evento)}', '${escHtml(fecha + (hora ? ' · ' + hora : ''))}')">Inscribirse</button>`;
+
+    return `
+      <div class="race-card">
+        <div class="race-card-header">
+          ${km ? `<div class="race-km">${km}</div>` : ''}
+          <div class="race-name">${escHtml(c.nombre_evento)}</div>
+        </div>
+        <div class="race-card-body">
+          <div class="race-meta">
+            <div class="race-meta-item">
+              <svg class="meta-icon" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Z" fill="currentColor"/>
+                <path d="M8 4a.75.75 0 0 1 .75.75v3.19l2.28 1.52a.75.75 0 0 1-.83 1.25L7.45 9.06A.75.75 0 0 1 7.25 8.5V4.75A.75.75 0 0 1 8 4Z" fill="currentColor"/>
+              </svg>
+              ${escHtml(fecha)}${hora ? ' · ' + hora : ''}
+            </div>
+            ${c.lugar_o_ciudad ? `<div class="race-meta-item">
+              <svg class="meta-icon" viewBox="0 0 16 16" fill="none">
+                <path d="M8 0a5.5 5.5 0 0 1 5.5 5.5c0 3.75-5.5 10.5-5.5 10.5S2.5 9.25 2.5 5.5A5.5 5.5 0 0 1 8 0Zm0 1.5a4 4 0 0 0-4 4c0 2.6 3.4 7.6 4 8.5.6-.9 4-5.9 4-8.5a4 4 0 0 0-4-4Zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z" fill="currentColor"/>
+              </svg>
+              ${escHtml(c.lugar_o_ciudad)}
+            </div>` : ''}
+          </div>
+        </div>
+        <div class="race-card-footer">${btnHtml}</div>
+      </div>`;
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  /* ═══════════════════════════════════
+     MODAL INSCRIPCIÓN
+  ═══════════════════════════════════ */
+  function openModal(raceId, raceName, raceSub) {
+    selectedRaceId = raceId;
+    document.getElementById('modal-race-name').textContent = raceName;
+    document.getElementById('modal-race-sub').textContent  = raceSub;
+    document.getElementById('modal-categoria').value = '';
+    hideMsg('msg-modal');
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    selectedRaceId = null;
+  }
+
+  async function confirmarInscripcion() {
+    const categoria = document.getElementById('modal-categoria').value;
+    if (!categoria) { showMsg('msg-modal', 'error', 'Seleccioná una categoría.'); return; }
+    if (!selectedRaceId || !currentUser) return;
+
+    setLoading('btn-confirmar', true, 'Inscribiendo...');
+    try {
+      /* Verificar que no esté ya inscripto */
+      const { data: existe } = await sb(
+        `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&id_carrera=eq.${selectedRaceId}&select=id_usuario`
+      );
+      if (Array.isArray(existe) && existe.length > 0) {
+        showMsg('msg-modal', 'warning', 'Ya estás inscripto en esta carrera.');
+        return;
+      }
+
+      const payload = {
+        id_usuario:         currentUser.id_usuario,
+        id_carrera:         selectedRaceId,
+        categoria:          categoria,
+        estado_inscripcion: false,
+        kit:                false
+      };
+
+      const { ok, data } = await sb('usuarios_x_carrera', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        prefer: 'return=representation'
+      });
+
+      if (ok) {
+        closeModal();
+        showPage('app');
+        await loadCarreras();
+        await loadMisInscripciones();
+      } else {
+        const errMsg = typeof data === 'object' ? (data.message || JSON.stringify(data)) : data;
+        showMsg('msg-modal', 'error', 'Error al inscribirse: ' + errMsg);
+      }
+    } catch (e) {
+      showMsg('msg-modal', 'error', 'Error de red: ' + e.message);
+    } finally {
+      setLoading('btn-confirmar', false);
+    }
+  }
+
+  /* ═══════════════════════════════════
+     MIS INSCRIPCIONES
+  ═══════════════════════════════════ */
+  async function loadMisInscripciones() {
+    const container = document.getElementById('inscripciones-container');
+    container.innerHTML = '<div class="empty-state"><p>Cargando...</p></div>';
+    try {
+      const { ok, data } = await sb(
+        `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&select=id_carrera,categoria,estado_inscripcion,numero_dorsal,kit`
+      );
+      if (!ok || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Todavía no estás anotado en ninguna carrera.</p></div>';
+        return;
+      }
+
+      /* Traer nombres de las carreras */
+      const ids = data.map(r => r.id_carrera).join(',');
+      const { data: carreras } = await sb(
+        `carreras?id_carrera=in.(${ids})&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad`
+      );
+      const carreraMap = {};
+      (carreras || []).forEach(c => { carreraMap[c.id_carrera] = c; });
+
+      container.innerHTML = data.map(ins => {
+        const c = carreraMap[ins.id_carrera] || {};
+        const fecha = c.fecha_hora_largada
+          ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'short', year:'numeric' })
+          : '—';
+        const pagado = ins.estado_inscripcion ? '<span class="badge badge-green">Pago</span>' : '<span class="badge badge-gray">Pendiente pago</span>';
+        const kitBadge = ins.kit ? '<span class="badge badge-green" style="margin-left:4px;">Kit retirado</span>' : '';
+        return `
+          <div class="inscripcion-item">
+            <div class="inscripcion-dot"></div>
+            <div class="inscripcion-info">
+              <div class="inscripcion-name">${escHtml(c.nombre_evento || '—')}</div>
+              <div class="inscripcion-meta">${escHtml(fecha)} · ${escHtml(ins.categoria || '—')} · ${escHtml(c.lugar_o_ciudad || '')} ${pagado} ${kitBadge}</div>
+            </div>
+            ${ins.numero_dorsal ? `<div class="inscripcion-dorsal">#${ins.numero_dorsal}</div>` : ''}
+          </div>`;
+      }).join('');
+    } catch (e) {
+      container.innerHTML = `<div class="empty-state"><p>Error: ${e.message}</p></div>`;
+    }
+  }
+
+  /* ── Cerrar modal al clickear overlay ── */
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>

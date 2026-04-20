@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackPass — Panel de Gestión</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #1D9E75;
+      --accent-light: #E1F5EE;
+      --accent-dark: #085041;
+      --danger: #E24B4A;
+      --danger-light: #FCEBEB;
+      --danger-dark: #791F1F;
+      --warn: #BA7517;
+      --warn-light: #FAEEDA;
+      --warn-dark: #412402;
+      --bg: #f5f5f3;
+      --surface: #ffffff;
+      --surface-2: #f1efe8;
+      --border: rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.18);
+      --text: #1a1a18;
+      --text-2: #6b6b67;
+      --text-3: #9b9b97;
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111110;
+        --surface: #1c1c1a;
+        --surface-2: #242422;
+        --border: rgba(255,255,255,0.08);
+        --border-md: rgba(255,255,255,0.16);
+        --text: #f0ede8;
+        --text-2: #9b9b97;
+        --text-3: #6b6b67;
+        --accent-light: #04342C;
+        --accent-dark: #9FE1CB;
+        --danger-light: #501313;
+        --danger-dark: #F7C1C1;
+        --warn-light: #2c1a00;
+        --warn-dark: #FAC775;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+    .logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
+    .logo-text {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--text);
+    }
+    .logo-text span { color: var(--accent); }
+    .header-label {
+      font-size: 12px;
+      color: var(--text-2);
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border-md);
+      background: var(--surface-2);
+    }
+    .header-right { margin-left: auto; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+    .badge-ok  { background: var(--accent-light); color: var(--accent-dark); }
+    .badge-err { background: var(--danger-light);  color: var(--danger-dark); }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-ok  .badge-dot { background: var(--accent); }
+    .badge-err .badge-dot { background: var(--danger); }
+
+    /* ── Layout ── */
+    .wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Carrera selector card ── */
+    .selector-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+    }
+    .selector-card .field { flex: 1; }
+    .diag-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--danger-light);
+      border: 0.5px solid var(--danger);
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--danger-dark);
+      line-height: 1.5;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Form elements ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 12px; color: var(--text-2); font-weight: 500; }
+
+    input[type="text"], select {
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+      height: 36px;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+    }
+    input::placeholder { color: var(--text-3); }
+    select option { background: var(--surface); color: var(--text); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius);
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--text);
+      transition: background 0.12s, opacity 0.12s;
+      height: 36px;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .btn:hover  { background: var(--surface-2); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--accent); color: white; border-color: transparent; }
+    .btn-primary:hover { opacity: 0.87; background: var(--accent); }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 0.5px solid var(--border);
+      margin-bottom: 1.5rem;
+      gap: 0;
+    }
+    .tab {
+      font-size: 13px;
+      padding: 9px 22px;
+      cursor: pointer;
+      color: var(--text-2);
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      font-family: inherit;
+      font-weight: 400;
+      transition: color 0.12s;
+    }
+    .tab:hover  { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+    /* ── Sections ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Form layouts ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .form-row-single {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    @media (max-width: 540px) {
+      .form-row, .form-row-single { grid-template-columns: 1fr; }
+      .selector-card { flex-direction: column; align-items: stretch; }
+    }
+
+    /* ── Result boxes ── */
+    .result-box {
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 14px;
+      display: none;
+    }
+    .result-box.visible { display: block; }
+    .result-box.success { background: var(--accent-light); border: 0.5px solid var(--accent); color: var(--accent-dark); }
+    .result-box.error   { background: var(--danger-light); border: 0.5px solid var(--danger); color: var(--danger-dark); }
+    .result-box.warning { background: var(--warn-light);   border: 0.5px solid var(--warn);   color: var(--warn-dark); }
+
+    .result-title { font-weight: 500; margin-bottom: 10px; font-size: 14px; }
+    .result-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+    .result-item  { background: rgba(255,255,255,0.5); border-radius: var(--radius); padding: 8px 10px; }
+    .result-item .r-label { font-size: 11px; opacity: 0.65; margin-bottom: 2px; }
+    .result-item .r-value { font-size: 15px; font-weight: 500; }
+    .result-time  { margin-top: 8px; font-size: 12px; opacity: 0.6; }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <a class="logo" href="#">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+        <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      </svg>
+      <span class="logo-text">Track<span>Pass</span></span>
+    </a>
+    <span class="header-label">Panel de gestión</span>
+    <div class="header-right">
+      <span id="conn-status">
+        <span class="status-badge badge-err">
+          <span class="badge-dot"></span>Conectando...
+        </span>
+      </span>
+    </div>
+  </header>
+
+  <div class="wrapper">
+
+    <!-- Carrera selector -->
+    <div class="selector-card">
+      <div class="field">
+        <label>Carrera activa</label>
+        <select id="carrera-select" onchange="setCarrera(this.value)">
+          <option value="">— Cargando carreras... —</option>
+        </select>
+      </div>
+      <button class="btn" onclick="init()" title="Recargar carreras">↺ Recargar</button>
+      <div id="diag-msg" class="diag-msg"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('asoc', this)">Asociar Pulsera</button>
+      <button class="tab" onclick="switchTab('kit', this)">Retiro de Kit</button>
+      <button class="tab" onclick="switchTab('ingreso', this)">Ingreso a Pista</button>
+    </div>
+
+    <!-- Tab 1: Asociar -->
+    <div id="tab-asoc" class="section active">
+      <div class="card">
+        <div class="card-title">Asociar corredor a pulsera NFC</div>
+        <p class="section-desc">Ingresá el DNI del corredor y el ID de la pulsera NFC para vincularlos en el sistema.</p>
+        <div class="form-row">
+          <div class="field">
+            <label>DNI del corredor</label>
+            <input type="text" id="asoc-dni" placeholder="12345678" />
+          </div>
+          <div class="field">
+            <label>ID de pulsera (NFC)</label>
+            <input type="text" id="asoc-pulsera" placeholder="NFC-XXXXXX"
+              onkeydown="if(event.key==='Enter') asociarPulsera()" />
+          </div>
+          <button class="btn btn-primary" onclick="asociarPulsera()" id="btn-asoc">Asociar</button>
+        </div>
+        <div id="result-asoc" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Kit -->
+    <div id="tab-kit" class="section">
+      <div class="card">
+        <div class="card-title">Retiro de kit</div>
+        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado de inscripción sea <strong>pago</strong> y se registra el retiro del kit.</p>
+        <div class="form-row-single">
+          <div class="field">
+            <label>ID de pulsera (NFC)</label>
+            <input type="text" id="kit-pulsera" placeholder="NFC-XXXXXX"
+              onkeydown="if(event.key==='Enter') retirarKit()" />
+          </div>
+          <button class="btn btn-primary" onclick="retirarKit()" id="btn-kit">Validar y registrar</button>
+        </div>
+        <div id="result-kit" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Ingreso -->
+    <div id="tab-ingreso" class="section">
+      <div class="card">
+        <div class="card-title">Ingreso a pista</div>
+        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado sea <strong>pago</strong> y que el kit esté <strong>retirado</strong>.</p>
+        <div class="form-row-single">
+          <div class="field">
+            <label>ID de pulsera (NFC)</label>
+            <input type="text" id="ingreso-pulsera" placeholder="NFC-XXXXXX"
+              onkeydown="if(event.key==='Enter') registrarIngreso()" />
+          </div>
+          <button class="btn btn-primary" onclick="registrarIngreso()" id="btn-ingreso">Validar ingreso</button>
+        </div>
+        <div id="result-ingreso" class="result-box"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ── Credenciales Supabase ── */
+    const SUPABASE_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdWRiYnF3bGhzanFwY2tzcWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1Nzg0ODcsImV4cCI6MjA5MTE1NDQ4N30.E9iS731xTZMx-2qsN18eVCooyBN7BdigcDfkt5LUM64';
+    let CARRERA_ID = null;
+
+    /* ── Supabase REST helper ── */
+    async function supaFetch(path, opts = {}) {
+      const url = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/' + path;
+      const res = await fetch(url, {
+        ...opts,
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type':  'application/json',
+          'Accept':        'application/json',
+          'Prefer':        opts.prefer || 'return=representation',
+          ...(opts.headers || {})
+        }
+      });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = text; }
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    /* ── Tab switching ── */
+    function switchTab(name, el) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      el.classList.add('active');
+      ['asoc', 'kit', 'ingreso'].forEach(id => hideResult('result-' + id));
+    }
+
+    /* ── Result helpers ── */
+    function showResult(id, type, html) {
+      const el = document.getElementById(id);
+      el.className = 'result-box visible ' + type;
+      el.innerHTML = html;
+    }
+    function hideResult(id) {
+      const el = document.getElementById(id);
+      el.className = 'result-box';
+      el.innerHTML = '';
+    }
+
+    /* ── Button loading ── */
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (loading) {
+        btn._orig     = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span>Procesando...';
+        btn.disabled  = true;
+      } else {
+        btn.innerHTML = btn._orig || btn.innerHTML;
+        btn.disabled  = false;
+      }
+    }
+
+    /* ── Connection badge ── */
+    function setConnStatus(ok) {
+      document.getElementById('conn-status').innerHTML = ok
+        ? '<span class="status-badge badge-ok"><span class="badge-dot"></span>Conectado</span>'
+        : '<span class="status-badge badge-err"><span class="badge-dot"></span>Error de conexión</span>';
+    }
+
+    /* ── Diagnóstico ── */
+    function showDiag(html) {
+      const el = document.getElementById('diag-msg');
+      el.style.display = 'block';
+      el.innerHTML = html;
+    }
+    function hideDiag() {
+      const el = document.getElementById('diag-msg');
+      el.style.display = 'none';
+      el.innerHTML = '';
+    }
+
+    /* ── Init: carga carreras ── */
+    async function init() {
+      const sel = document.getElementById('carrera-select');
+      sel.innerHTML = '<option value="">— Cargando... —</option>';
+      hideDiag();
+
+      try {
+        const { ok, status, data } = await supaFetch(
+          'carreras?select=id_carrera,nombre_evento,fecha_hora_largada&carrera_activa=eq.true&order=fecha_hora_largada.asc'
+        );
+
+        if (!ok) {
+          const msg = typeof data === 'object' ? JSON.stringify(data) : String(data);
+          showDiag(`<strong>Error HTTP ${status}:</strong> ${msg}`);
+          setConnStatus(false);
+          sel.innerHTML = '<option value="">— Error al cargar —</option>';
+          return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+          /* Intentar sin filtro para saber si hay carreras pero sin carrera_activa=true */
+          const { data: todas } = await supaFetch('carreras?select=id_carrera,carrera_activa&limit=5');
+          if (Array.isArray(todas) && todas.length > 0) {
+            showDiag(
+              `Se encontraron ${todas.length} carrera(s) pero ninguna tiene <code>carrera_activa = true</code>. ` +
+              `Activá al menos una carrera en Supabase.`
+            );
+          } else {
+            showDiag(
+              `La tabla <code>carreras</code> devolvió un array vacío. ` +
+              `Verificá que existan carreras en la base de datos y que las políticas RLS permitan SELECT al rol <code>anon</code>.`
+            );
+          }
+          setConnStatus(false);
+          sel.innerHTML = '<option value="">— Sin carreras activas —</option>';
+          return;
+        }
+
+        sel.innerHTML = '<option value="">— Seleccionar carrera —</option>';
+        data.forEach(c => {
+          const date = c.fecha_hora_largada
+            ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
+            : '';
+          sel.innerHTML += `<option value="${c.id_carrera}">${c.nombre_evento}${date ? ' · ' + date : ''}</option>`;
+        });
+        hideDiag();
+        setConnStatus(true);
+
+      } catch (e) {
+        setConnStatus(false);
+        showDiag(`<strong>Error de red:</strong> ${e.message}`);
+        sel.innerHTML = '<option value="">— Error de red —</option>';
+      }
+    }
+
+    function setCarrera(val) {
+      CARRERA_ID = val ? parseInt(val) : null;
+      ['asoc', 'kit', 'ingreso'].forEach(id => hideResult('result-' + id));
+    }
+
+    /* ── Guard ── */
+    function guardCarrera(resultId) {
+      if (!CARRERA_ID) {
+        showResult(resultId, 'warning', 'Seleccioná una carrera activa antes de operar.');
+        return false;
+      }
+      return true;
+    }
+
+    /* ═══════════════════════════════════════
+       SECCIÓN 1 — Asociar pulsera
+    ═══════════════════════════════════════ */
+    async function asociarPulsera() {
+      const dni     = document.getElementById('asoc-dni').value.trim();
+      const pulsera = document.getElementById('asoc-pulsera').value.trim();
+
+      if (!dni || !pulsera) { showResult('result-asoc', 'error', 'Ingresá el DNI y el ID de pulsera.'); return; }
+
+      setLoading('btn-asoc', true);
+      try {
+        const { ok, data } = await supaFetch(
+          `usuario?dni=eq.${encodeURIComponent(dni)}&select=id_usuario,nombre,apellido,dni`
+        );
+        if (!ok || !Array.isArray(data) || data.length === 0) {
+          showResult('result-asoc', 'error', 'No se encontró ningún usuario con ese DNI.');
+          return;
+        }
+        const user = data[0];
+
+        const { ok: ok2, data: d2 } = await supaFetch(
+          `usuario?id_usuario=eq.${user.id_usuario}`,
+          { method: 'PATCH', body: JSON.stringify({ id_pulsera: pulsera }), prefer: 'return=representation' }
+        );
+        if (ok2) {
+          showResult('result-asoc', 'success', `
+            <div class="result-title">Pulsera asociada correctamente</div>
+            <div class="result-grid">
+              <div class="result-item"><div class="r-label">Nombre</div><div class="r-value">${user.nombre} ${user.apellido}</div></div>
+              <div class="result-item"><div class="r-label">DNI</div><div class="r-value">${user.dni}</div></div>
+              <div class="result-item"><div class="r-label">ID Pulsera</div><div class="r-value">${pulsera}</div></div>
+            </div>
+          `);
+          document.getElementById('asoc-dni').value     = '';
+          document.getElementById('asoc-pulsera').value = '';
+          document.getElementById('asoc-dni').focus();
+        } else {
+          showResult('result-asoc', 'error', 'Error al actualizar la pulsera: ' + JSON.stringify(d2));
+        }
+      } catch (e) {
+        showResult('result-asoc', 'error', 'Error de red: ' + e.message);
+      } finally {
+        setLoading('btn-asoc', false);
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       SECCIÓN 2 — Retiro de kit
+    ═══════════════════════════════════════ */
+    async function retirarKit() {
+      const pulsera = document.getElementById('kit-pulsera').value.trim();
+      if (!pulsera)                    { showResult('result-kit', 'error', 'Ingresá el ID de pulsera.'); return; }
+      if (!guardCarrera('result-kit')) return;
+
+      setLoading('btn-kit', true);
+      try {
+        const { ok, data } = await supaFetch(
+          `usuario?id_pulsera=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
+        );
+        if (!ok || !Array.isArray(data) || data.length === 0) {
+          showResult('result-kit', 'error', 'No se encontró ningún usuario con esa pulsera.');
+          return;
+        }
+        const user = data[0];
+
+        const { ok: ok2, data: d2 } = await supaFetch(
+          `usuarios_x_carrera?id_usuario=eq.${user.id_usuario}&id_carrera=eq.${CARRERA_ID}&select=estado_inscripcion,kit,numero_dorsal`
+        );
+        if (!ok2 || !Array.isArray(d2) || d2.length === 0) {
+          showResult('result-kit', 'error', 'Este corredor no está inscripto en la carrera seleccionada.');
+          return;
+        }
+        const ins = d2[0];
+
+        if (!ins.estado_inscripcion) {
+          showResult('result-kit', 'warning', 'La inscripción no está confirmada como paga. No se puede retirar el kit.');
+          return;
+        }
+        if (ins.kit === true) {
+          showResult('result-kit', 'warning', `
+            <div class="result-title">El kit ya fue retirado anteriormente</div>
+            <div class="result-grid">
+              <div class="result-item"><div class="r-label">Nombre</div><div class="r-value">${user.nombre} ${user.apellido}</div></div>
+              <div class="result-item"><div class="r-label">DNI</div><div class="r-value">${user.dni}</div></div>
+              <div class="result-item"><div class="r-label">Dorsal</div><div class="r-value">#${ins.numero_dorsal || '—'}</div></div>
+            </div>
+          `);
+          return;
+        }
+
+        const { ok: ok3, data: d3 } = await supaFetch(
+          `usuarios_x_carrera?id_usuario=eq.${user.id_usuario}&id_carrera=eq.${CARRERA_ID}`,
+          { method: 'PATCH', body: JSON.stringify({ kit: true }), prefer: 'return=representation' }
+        );
+        if (ok3) {
+          showResult('result-kit', 'success', `
+            <div class="result-title">Kit entregado — registro actualizado</div>
+            <div class="result-grid">
+              <div class="result-item"><div class="r-label">Nombre</div><div class="r-value">${user.nombre} ${user.apellido}</div></div>
+              <div class="result-item"><div class="r-label">DNI</div><div class="r-value">${user.dni}</div></div>
+              <div class="result-item"><div class="r-label">Dorsal</div><div class="r-value">#${ins.numero_dorsal || '—'}</div></div>
+            </div>
+            <div class="result-time">${new Date().toLocaleString('es-AR')}</div>
+          `);
+          document.getElementById('kit-pulsera').value = '';
+          document.getElementById('kit-pulsera').focus();
+        } else {
+          showResult('result-kit', 'error', 'Error al actualizar el kit: ' + JSON.stringify(d3));
+        }
+      } catch (e) {
+        showResult('result-kit', 'error', 'Error de red: ' + e.message);
+      } finally {
+        setLoading('btn-kit', false);
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       SECCIÓN 3 — Ingreso a pista
+    ═══════════════════════════════════════ */
+    async function registrarIngreso() {
+      const pulsera = document.getElementById('ingreso-pulsera').value.trim();
+      if (!pulsera)                        { showResult('result-ingreso', 'error', 'Ingresá el ID de pulsera.'); return; }
+      if (!guardCarrera('result-ingreso')) return;
+
+      setLoading('btn-ingreso', true);
+      try {
+        const { ok, data } = await supaFetch(
+          `usuario?id_pulsera=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
+        );
+        if (!ok || !Array.isArray(data) || data.length === 0) {
+          showResult('result-ingreso', 'error', 'No se encontró ningún usuario con esa pulsera.');
+          return;
+        }
+        const user = data[0];
+
+        const { ok: ok2, data: d2 } = await supaFetch(
+          `usuarios_x_carrera?id_usuario=eq.${user.id_usuario}&id_carrera=eq.${CARRERA_ID}&select=estado_inscripcion,kit,numero_dorsal,categoria`
+        );
+        if (!ok2 || !Array.isArray(d2) || d2.length === 0) {
+          showResult('result-ingreso', 'error', 'Este corredor no está inscripto en la carrera seleccionada.');
+          return;
+        }
+        const ins = d2[0];
+
+        if (!ins.estado_inscripcion) {
+          showResult('result-ingreso', 'warning', 'La inscripción no está confirmada como paga. No se puede ingresar a la pista.');
+          return;
+        }
+        if (!ins.kit) {
+          showResult('result-ingreso', 'warning', 'El corredor no ha retirado el kit todavía.');
+          return;
+        }
+
+        showResult('result-ingreso', 'success', `
+          <div class="result-title">Ingreso habilitado</div>
+          <div class="result-grid">
+            <div class="result-item"><div class="r-label">Nombre</div><div class="r-value">${user.nombre} ${user.apellido}</div></div>
+            <div class="result-item"><div class="r-label">DNI</div><div class="r-value">${user.dni}</div></div>
+            <div class="result-item"><div class="r-label">Dorsal</div><div class="r-value">#${ins.numero_dorsal || '—'}</div></div>
+            <div class="result-item"><div class="r-label">Categoría</div><div class="r-value">${ins.categoria || '—'}</div></div>
+          </div>
+          <div class="result-time">${new Date().toLocaleString('es-AR')}</div>
+        `);
+        document.getElementById('ingreso-pulsera').value = '';
+        document.getElementById('ingreso-pulsera').focus();
+
+      } catch (e) {
+        showResult('result-ingreso', 'error', 'Error de red: ' + e.message);
+      } finally {
+        setLoading('btn-ingreso', false);
+      }
+    }
+
+    /* ── Arrancar ── */
+    init();
+  </script>
+</body>
+</html>
