@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackPass — Información de Emergencia</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='512' height='512' rx='112' fill='%231D9E75'/%3E%3Cpath d='M128 256 L208 336 L384 176' stroke='white' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='256' cy='256' r='160' stroke='white' stroke-width='18' stroke-dasharray='36 28' fill='none' opacity='0.35'/%3E%3C/svg%3E" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #D93025;
+      --red-dark: #A52019;
+      --red-light: #FDECEA;
+      --red-border: #F5C6C3;
+      --accent: #1D9E75;
+      --accent-light: #E1F5EE;
+      --accent-dark: #085041;
+      --bg: #f5f5f3;
+      --surface: #ffffff;
+      --surface-2: #f1efe8;
+      --border: rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.16);
+      --text: #1a1a18;
+      --text-2: #6b6b67;
+      --text-3: #9b9b97;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Banner de emergencia ── */
+    .emergency-banner {
+      background: var(--red);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .emergency-banner .pulse-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: white;
+      animation: pulse 1.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .emergency-banner span {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .logo-icon { width: 26px; height: 26px; flex-shrink: 0; }
+    .logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; color: var(--text); }
+    .logo-text span { color: var(--accent); }
+
+    /* ── Main content ── */
+    .content {
+      flex: 1;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    /* ── Estado: cargando / error / no encontrado ── */
+    .state-box {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-2);
+    }
+    .state-box .icon { font-size: 40px; margin-bottom: 1rem; }
+    .state-box h2 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .state-box p  { font-size: 14px; line-height: 1.5; }
+
+    /* ── Avatar ── */
+    .profile-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 1.5rem;
+      text-align: center;
+    }
+    .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--red-light);
+      border: 3px solid var(--red-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .profile-dni {
+      font-size: 14px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .profile-dni strong { color: var(--text); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .card-header {
+      padding: 10px 16px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+    }
+    .card-header-icon {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .icon-red   { background: var(--red-light); }
+    .icon-green { background: var(--accent-light); }
+    .icon-blue  { background: #EEF2FF; }
+    .card-header h3 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-2);
+    }
+
+    /* ── Sangre highlight ── */
+    .blood-type-card {
+      background: var(--red);
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .blood-type-big {
+      font-size: 42px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .blood-type-info { flex: 1; }
+    .blood-type-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2px;
+    }
+    .blood-type-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.4;
+    }
+
+    /* ── Info rows ── */
+    .info-row {
+      display: flex;
+      align-items: center;
+      padding: 13px 16px;
+      border-bottom: 0.5px solid var(--border);
+      gap: 12px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+      font-size: 12px;
+      color: var(--text-2);
+      width: 110px;
+      flex-shrink: 0;
+    }
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+    }
+    .info-value.na { color: var(--text-3); font-weight: 400; }
+
+    /* ── Carrera badge ── */
+    .carrera-item {
+      padding: 12px 16px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .carrera-item:last-child { border-bottom: none; }
+    .carrera-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .carrera-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .carrera-meta { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+    .dorsal {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 3px 9px;
+      border-radius: 99px;
+      flex-shrink: 0;
+    }
+
+    /* ── Spinner ── */
+    .spinner-wrap { display: flex; justify-content: center; padding: 3rem; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border-md);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 12px;
+      color: var(--text-3);
+      border-top: 0.5px solid var(--border);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Banner emergencia -->
+  <div class="emergency-banner">
+    <div class="pulse-dot"></div>
+    <span>Información de emergencia</span>
+    <div class="pulse-dot"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+      <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+    </svg>
+    <span class="logo-text">Track<span>Pass</span></span>
+  </header>
+
+  <!-- Contenido dinámico -->
+  <div class="content" id="content">
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </div>
+
+  <footer class="footer">
+    TrackPass · Sistema de gestión de carreras
+  </footer>
+
+  <script>
+    const SB_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdWRiYnF3bGhzanFwY2tzcWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1Nzg0ODcsImV4cCI6MjA5MTE1NDQ4N30.E9iS731xTZMx-2qsN18eVCooyBN7BdigcDfkt5LUM64';
+
+    async function sb(path) {
+      const res = await fetch(SB_URL + '/rest/v1/' + path, {
+        headers: {
+          'apikey':        SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Accept':        'application/json'
+        }
+      });
+      const text = await res.text();
+      try { return { ok: res.ok, data: JSON.parse(text) }; }
+      catch { return { ok: res.ok, data: text }; }
+    }
+
+    function escH(str) {
+      if (!str && str !== 0) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function val(v, fallback = '—') {
+      return (v !== null && v !== undefined && v !== '') ? escH(v) : `<span class="na">${fallback}</span>`;
+    }
+
+    function calcEdad(fechaNac) {
+      if (!fechaNac) return null;
+      const hoy  = new Date();
+      const nac  = new Date(fechaNac);
+      let edad   = hoy.getFullYear() - nac.getFullYear();
+      const m    = hoy.getMonth() - nac.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+      return edad;
+    }
+
+    function bloodDesc(tipo) {
+      const map = {
+        'A+':  'Puede donar a A+, AB+',
+        'A-':  'Puede donar a A+, A-, AB+, AB-',
+        'B+':  'Puede donar a B+, AB+',
+        'B-':  'Puede donar a B+, B-, AB+, AB-',
+        'AB+': 'Receptor universal',
+        'AB-': 'Puede donar a AB+, AB-',
+        'O+':  'Puede donar a A+, B+, AB+, O+',
+        'O-':  'Donante universal',
+      };
+      return map[tipo] || '';
+    }
+
+    function renderError(icon, title, msg) {
+      document.getElementById('content').innerHTML = `
+        <div class="state-box">
+          <div class="icon">${icon}</div>
+          <h2>${title}</h2>
+          <p>${msg}</p>
+        </div>`;
+    }
+
+    async function load() {
+      /* Leer ?id= de la URL */
+      const params   = new URLSearchParams(window.location.search);
+      const pulseraId = params.get('id');
+
+      if (!pulseraId) {
+        renderError('🔍', 'Sin ID de pulsera', 'Este link no contiene un ID de pulsera válido. Verificá que el tag NFC esté correctamente programado.');
+        return;
+      }
+
+      try {
+        /* Buscar usuario por id_pulsera */
+        const { ok, data } = await sb(
+          `usuario?id_pulsera=eq.${encodeURIComponent(pulseraId)}&select=id_usuario,nombre,apellido,dni,fecha_nacimiento,grupo_sanguineo,telefono,sexo,nacionalidad`
+        );
+
+        if (!ok || !Array.isArray(data) || data.length === 0) {
+          renderError('❓', 'Corredor no encontrado', `No hay ningún corredor asociado a la pulsera <strong>${escH(pulseraId)}</strong>. Es posible que la pulsera no haya sido asignada aún.`);
+          return;
+        }
+
+        const u    = data[0];
+        const edad = calcEdad(u.fecha_nacimiento);
+        const initials = ((u.nombre || '?')[0] + (u.apellido || '?')[0]).toUpperCase();
+
+        /* Buscar inscripciones activas */
+        const { data: inscripciones } = await sb(
+          `usuarios_x_carrera?id_usuario=eq.${u.id_usuario}&inscripto=eq.true&select=id_carrera,categoria,numero_dorsal`
+        );
+
+        let carrerasHtml = '';
+        if (Array.isArray(inscripciones) && inscripciones.length > 0) {
+          const ids = inscripciones.map(r => r.id_carrera).join(',');
+          const { data: carreras } = await sb(
+            `carreras?id_carrera=in.(${ids})&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad,carrera_activa`
+          );
+          const carreraMap = {};
+          (carreras || []).forEach(c => { carreraMap[c.id_carrera] = c; });
+
+          const conCarrera = inscripciones.filter(i => carreraMap[i.id_carrera]);
+          if (conCarrera.length > 0) {
+            carrerasHtml = `
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-header-icon icon-green">🏁</div>
+                  <h3>Carreras inscripto</h3>
+                </div>
+                ${conCarrera.map(ins => {
+                  const c = carreraMap[ins.id_carrera];
+                  const fecha = c.fecha_hora_largada
+                    ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' })
+                    : '—';
+                  const esActiva = c.carrera_activa;
+                  const activaBadge = esActiva
+                    ? '<span style="font-size:10px;font-weight:600;background:#E1F5EE;color:#085041;padding:2px 7px;border-radius:99px;margin-left:6px;">HOY</span>'
+                    : '';
+                  return `
+                    <div class="carrera-item">
+                      <div class="carrera-dot" style="${esActiva ? '' : 'background:var(--text-3)'}"></div>
+                      <div>
+                        <div class="carrera-name">${escH(c.nombre_evento)}${activaBadge}</div>
+                        <div class="carrera-meta">${escH(fecha)}${c.lugar_o_ciudad ? ' · ' + escH(c.lugar_o_ciudad) : ''}${ins.categoria ? ' · ' + escH(ins.categoria) : ''}</div>
+                      </div>
+                      ${ins.numero_dorsal ? `<div class="dorsal">#${ins.numero_dorsal}</div>` : ''}
+                    </div>`;
+                }).join('')}
+              </div>`;
+          }
+        }
+
+        /* Renderizar todo */
+        document.getElementById('content').innerHTML = `
+
+          <div class="profile-top">
+            <div class="avatar">${initials}</div>
+            <div class="profile-name">${escH(u.nombre)} ${escH(u.apellido)}</div>
+            <div class="profile-dni">DNI <strong>${escH(u.dni) || '—'}</strong>${edad !== null ? ` · ${edad} años` : ''}</div>
+          </div>
+
+          ${u.grupo_sanguineo ? `
+          <div class="blood-type-card">
+            <div class="blood-type-big">${escH(u.grupo_sanguineo)}</div>
+            <div class="blood-type-info">
+              <div class="blood-type-label">Grupo sanguíneo</div>
+              <div class="blood-type-desc">${bloodDesc(u.grupo_sanguineo)}</div>
+            </div>
+          </div>` : `
+          <div class="blood-type-card" style="background:#888;">
+            <div class="blood-type-big">?</div>
+            <div class="blood-type-info">
+              <div class="blood-type-label">Grupo sanguíneo</div>
+              <div class="blood-type-desc" style="color:rgba(255,255,255,0.8);">No registrado</div>
+            </div>
+          </div>`}
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon icon-red">👤</div>
+              <h3>Datos personales</h3>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Fecha de nac.</div>
+              <div class="info-value">${u.fecha_nacimiento ? new Date(u.fecha_nacimiento + 'T00:00:00').toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' }) : '<span class="na">—</span>'}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Sexo</div>
+              <div class="info-value">${u.sexo === 'M' ? 'Masculino' : u.sexo === 'F' ? 'Femenino' : u.sexo === 'X' ? 'No binario' : val(u.sexo)}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Nacionalidad</div>
+              <div class="info-value">${val(u.nacionalidad)}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon icon-blue">📞</div>
+              <h3>Contacto de emergencia</h3>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Teléfono</div>
+              <div class="info-value">
+                ${u.telefono
+                  ? `<a href="tel:${escH(u.telefono)}" style="color:var(--accent);text-decoration:none;font-weight:500;">${escH(u.telefono)}</a>`
+                  : '<span class="na">No registrado</span>'}
+              </div>
+            </div>
+          </div>
+
+          ${carrerasHtml}
+        `;
+
+      } catch (e) {
+        renderError('⚠️', 'Error de conexión', 'No se pudo cargar la información. Verificá tu conexión a internet e intentá nuevamente.<br><br><small style="color:var(--text-3)">' + e.message + '</small>');
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
