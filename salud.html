@@ -303,7 +303,7 @@
 
   <script>
     const SB_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
-    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdWRiYnF3bGhzanFwY2tzcWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1Nzg0ODcsImV4cCI6MjA5MTE1NDQ4N30.E9iS731xTZMx-2qsN18eVCooyBN7BdigcDfkt5LUM64';
+    const SB_KEY = 'sb_publishable_-JeduYoljL3od9nY8--4UA_FX4AaRCs';
 
     async function sb(path) {
       const res = await fetch(SB_URL + '/rest/v1/' + path, {
@@ -373,7 +373,7 @@
       try {
         /* Buscar usuario por id_pulsera */
         const { ok, data } = await sb(
-          `usuario?id_pulsera=eq.${encodeURIComponent(pulseraId)}&select=id_usuario,nombre,apellido,dni,fecha_nacimiento,grupo_sanguineo,telefono,sexo,nacionalidad`
+          `usuario?id_pulsera=eq.${encodeURIComponent(pulseraId)}&select=id_usuario,nombre,apellido,dni,fecha_nacimiento,grupo_sanguineo,telefono,sexo,nacionalidad,condiciones_medicas,alergias,vencimiento_apto_medico`
         );
 
         if (!ok || !Array.isArray(data) || data.length === 0) {
@@ -472,7 +472,38 @@
               <div class="info-label">Nacionalidad</div>
               <div class="info-value">${val(u.nacionalidad)}</div>
             </div>
+            <div class="info-row">
+              <div class="info-label">Apto médico</div>
+              <div class="info-value">${(() => {
+                if (!u.vencimiento_apto_medico) return '<span class="na">No registrado</span>';
+                const venc = new Date(u.vencimiento_apto_medico);
+                const hoy  = new Date();
+                const diff = Math.ceil((venc - hoy) / (1000*60*60*24));
+                const fechaStr = venc.toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+                if (diff < 0)  return '<span style="color:var(--red);font-weight:600;">⚠ Vencido — ' + fechaStr + '</span>';
+                if (diff <= 30) return '<span style="color:#BA7517;font-weight:600;">⚠ Vence pronto — ' + fechaStr + '</span>';
+                return '<span style="color:#1D9E75;font-weight:500;">✓ Vigente hasta ' + fechaStr + '</span>';
+              })()}</div>
+            </div>
           </div>
+
+          ${(u.condiciones_medicas || u.alergias) ? `
+          <div class="card" style="border-color:var(--red-border);">
+            <div class="card-header" style="background:var(--red-light);">
+              <div class="card-header-icon icon-red">⚕️</div>
+              <h3 style="color:var(--red);">Información médica crítica</h3>
+            </div>
+            ${u.condiciones_medicas ? `
+            <div class="info-row">
+              <div class="info-label">Condiciones</div>
+              <div class="info-value" style="font-weight:500;color:var(--red);">${escH(u.condiciones_medicas)}</div>
+            </div>` : ''}
+            ${u.alergias ? `
+            <div class="info-row">
+              <div class="info-label">Alergias</div>
+              <div class="info-value" style="font-weight:500;color:var(--red);">${escH(u.alergias)}</div>
+            </div>` : ''}
+          </div>` : ''}
 
           <div class="card">
             <div class="card-header">
