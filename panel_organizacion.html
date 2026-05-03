@@ -560,7 +560,7 @@
 
         const { ok: ok2, data: d2 } = await supaFetch(
           `usuario?id_usuario=eq.${user.id_usuario}`,
-          { method: 'PATCH', body: JSON.stringify({ id_pulsera: pulsera }), prefer: 'return=representation' }
+          { method: 'PATCH', body: JSON.stringify({ id_pulsera_nfc: pulsera }), prefer: 'return=representation' }
         );
         if (ok2) {
           showResult('result-asoc', 'success', `
@@ -595,7 +595,7 @@
       setLoading('btn-kit', true);
       try {
         const { ok, data } = await supaFetch(
-          `usuario?id_pulsera=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
+          `usuario?id_pulsera_nfc=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
         );
         if (!ok || !Array.isArray(data) || data.length === 0) {
           showResult('result-kit', 'error', 'No se encontró ningún usuario con esa pulsera.');
@@ -665,7 +665,7 @@
       setLoading('btn-ingreso', true);
       try {
         const { ok, data } = await supaFetch(
-          `usuario?id_pulsera=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
+          `usuario?id_pulsera_nfc=eq.${encodeURIComponent(pulsera)}&select=id_usuario,nombre,apellido,dni`
         );
         if (!ok || !Array.isArray(data) || data.length === 0) {
           showResult('result-ingreso', 'error', 'No se encontró ningún usuario con esa pulsera.');

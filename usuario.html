@@ -534,14 +534,36 @@
         <p>Estos datos aparecen en tu pulsera NFC en caso de emergencia.</p>
       </div>
       <div class="card" style="padding:1.25rem 1.5rem;">
+
+        <!-- Valores actuales -->
+        <div id="perfil-actual" style="margin-bottom:1.25rem; padding-bottom:1.25rem; border-bottom:0.5px solid var(--border);">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-2);margin-bottom:10px;">Valores actuales</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="perfil-valores">
+            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Apto médico</div>
+              <div id="actual-apto" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 1;">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Estado apto</div>
+              <div id="apto-status" style="font-size:13px;font-weight:500;">—</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Condiciones médicas</div>
+              <div id="actual-condiciones" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Alergias</div>
+              <div id="actual-alergias" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-2);margin-bottom:10px;">Actualizar</div>
         <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
-          <div class="field">
+          <div class="field col-span-2">
             <label>Vencimiento apto médico (dd-mm-aaaa)</label>
             <input type="text" id="edit-apto" placeholder="31-12-2025" maxlength="10" oninput="formatDate(this)" />
-          </div>
-          <div class="field" style="align-self:flex-end;">
-            <label style="opacity:0"> </label>
-            <div id="apto-status" style="font-size:12px;color:var(--text-2);padding:9px 0;"></div>
           </div>
           <div class="field col-span-2">
             <label>Condiciones médicas</label>
@@ -1111,25 +1133,55 @@
   ═══════════════════════════════════ */
   function cargarPerfil() {
     const u = currentUser;
-    if (u.vencimiento_apto_medico)
-      document.getElementById('edit-apto').value       = formatDateDisplay(u.vencimiento_apto_medico);
-    if (u.condiciones_medicas)
-      document.getElementById('edit-condiciones').value = u.condiciones_medicas;
-    if (u.alergias)
-      document.getElementById('edit-alergias').value    = u.alergias;
 
-    /* Mostrar estado del apto */
+    /* ── Rellenar campos de edición ── */
+    document.getElementById('edit-apto').value        = u.vencimiento_apto_medico ? formatDateDisplay(u.vencimiento_apto_medico) : '';
+    document.getElementById('edit-condiciones').value = u.condiciones_medicas || '';
+    document.getElementById('edit-alergias').value    = u.alergias || '';
+
+    /* ── Mostrar valores actuales ── */
+    const aptoDisplay = document.getElementById('actual-apto');
+    const aptoStatus  = document.getElementById('apto-status');
+    const condDisplay = document.getElementById('actual-condiciones');
+    const alerDisplay = document.getElementById('actual-alergias');
+
+    /* Apto médico */
     if (u.vencimiento_apto_medico) {
       const venc  = new Date(u.vencimiento_apto_medico);
       const hoy   = new Date();
       const diff  = Math.ceil((venc - hoy) / (1000*60*60*24));
-      const aptoEl = document.getElementById('apto-status');
-      if (diff < 0)
-        aptoEl.innerHTML = `<span style="color:var(--danger);font-weight:500;">⚠ Vencido hace ${Math.abs(diff)} días</span>`;
-      else if (diff <= 30)
-        aptoEl.innerHTML = `<span style="color:var(--warn);font-weight:500;">⚠ Vence en ${diff} días</span>`;
-      else
-        aptoEl.innerHTML = `<span style="color:var(--accent);font-weight:500;">✓ Vigente (${diff} días)</span>`;
+      const fecha = venc.toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+      aptoDisplay.textContent = fecha;
+      aptoDisplay.style.color = 'var(--text)';
+      if (diff < 0) {
+        aptoStatus.innerHTML = `<span style="color:var(--danger);">⚠ Vencido hace ${Math.abs(diff)} días</span>`;
+      } else if (diff <= 30) {
+        aptoStatus.innerHTML = `<span style="color:var(--warn);">⚠ Vence en ${diff} días</span>`;
+      } else {
+        aptoStatus.innerHTML = `<span style="color:var(--accent);">✓ Vigente — ${diff} días</span>`;
+      }
+    } else {
+      aptoDisplay.textContent  = 'No registrado';
+      aptoDisplay.style.color  = 'var(--text-3)';
+      aptoStatus.innerHTML     = '<span style="color:var(--text-3);">Sin datos</span>';
+    }
+
+    /* Condiciones médicas */
+    if (u.condiciones_medicas) {
+      condDisplay.textContent = u.condiciones_medicas;
+      condDisplay.style.color = 'var(--text)';
+    } else {
+      condDisplay.textContent = 'No registradas';
+      condDisplay.style.color = 'var(--text-3)';
+    }
+
+    /* Alergias */
+    if (u.alergias) {
+      alerDisplay.textContent = u.alergias;
+      alerDisplay.style.color = 'var(--text)';
+    } else {
+      alerDisplay.textContent = 'No registradas';
+      alerDisplay.style.color = 'var(--text-3)';
     }
   }
 

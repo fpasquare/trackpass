@@ -371,9 +371,9 @@
       }
 
       try {
-        /* Buscar usuario por id_pulsera */
+        /* Buscar usuario por id_pulsera_nfc */
         const { ok, data } = await sb(
-          `usuario?id_pulsera=eq.${encodeURIComponent(pulseraId)}&select=id_usuario,nombre,apellido,dni,fecha_nacimiento,grupo_sanguineo,telefono,sexo,nacionalidad,condiciones_medicas,alergias,vencimiento_apto_medico`
+          `usuario?id_pulsera_nfc=eq.${encodeURIComponent(pulseraId)}&select=id_usuario,nombre,apellido,dni,fecha_nacimiento,grupo_sanguineo,telefono,sexo,nacionalidad,condiciones_medicas,alergias,vencimiento_apto_medico`
         );
 
         if (!ok || !Array.isArray(data) || data.length === 0) {
