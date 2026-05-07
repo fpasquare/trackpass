@@ -958,16 +958,32 @@
         }
       }
 
-      const { ok, data } = await sb('usuarios_x_carrera', {
-        method: 'POST',
-        body: JSON.stringify({
-          id_usuario: currentUser.id_usuario,
-          id_carrera: selectedRaceId,
-          kit: false,
-          inscripto: true
-        }),
-        prefer: 'return=representation'
-      });
+      /* Verificar si ya existe un registro previo con inscripto=false (se desinscribió antes) */
+      const { data: previo } = await sb(
+        `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&id_carrera=eq.${selectedRaceId}&inscripto=eq.false&select=id_usuario`
+      );
+
+      let ok, data;
+      if (Array.isArray(previo) && previo.length > 0) {
+        /* Ya existe — solo actualizar inscripto a true */
+        ({ ok, data } = await sb(
+          `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&id_carrera=eq.${selectedRaceId}`,
+          { method: 'PATCH', body: JSON.stringify({ inscripto: true }), prefer: 'return=representation' }
+        ));
+      } else {
+        /* No existe — crear fila nueva */
+        ({ ok, data } = await sb('usuarios_x_carrera', {
+          method: 'POST',
+          body: JSON.stringify({
+            id_usuario: currentUser.id_usuario,
+            id_carrera: selectedRaceId,
+            kit: false,
+            inscripto: true
+          }),
+          prefer: 'return=representation'
+        }));
+      }
+
       if (ok) {
         closeModal();
         await loadCarreras();
