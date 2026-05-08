@@ -358,7 +358,7 @@
     <div id="tab-kit" class="section">
       <div class="card">
         <div class="card-title">Retiro de kit</div>
-        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado de inscripción sea <strong>pago</strong> y se registra el retiro del kit.</p>
+        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado de inscripción sea <strong>pago</strong> y se registra el retiro del kit. El ID se puede ingresar en decimal o hexadecimal.</p>
         <div class="form-row-single">
           <div class="field">
             <label>ID de pulsera (NFC)</label>
@@ -375,7 +375,7 @@
     <div id="tab-ingreso" class="section">
       <div class="card">
         <div class="card-title">Ingreso a pista</div>
-        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado sea <strong>pago</strong> y que el kit esté <strong>retirado</strong>.</p>
+        <p class="section-desc">Escaneá la pulsera del corredor. Se valida que el estado sea <strong>pago</strong> y que el kit esté <strong>retirado</strong>. El ID se puede ingresar en decimal o hexadecimal.</p>
         <div class="form-row-single">
           <div class="field">
             <label>ID de pulsera (NFC)</label>
@@ -395,6 +395,22 @@
     const SUPABASE_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_-JeduYoljL3od9nY8--4UA_FX4AaRCs';
     let CARRERA_ID = null;
+
+    /* ── Conversión decimal → hexadecimal ──
+       Los lectores NFC USB entregan el UID en decimal.
+       La BD guarda el id_pulsera_nfc en hex (ej: 04AB3FC2).
+       Esta función convierte automáticamente si el input es numérico.
+    ── */
+    function normalizeId(raw) {
+      const val = raw.trim();
+      /* Si solo tiene dígitos decimales → convertir a HEX en mayúsculas */
+      if (/^\d+$/.test(val)) {
+        const hex = parseInt(val, 10).toString(16).toUpperCase();
+        return hex;
+      }
+      /* Si ya tiene letras (A-F) o separadores → asumir que ya es hex, devolver en mayúsculas sin separadores */
+      return val.replace(/[:\-\s]/g, '').toUpperCase();
+    }
 
     /* ── Supabase REST helper ── */
     async function supaFetch(path, opts = {}) {
@@ -543,7 +559,7 @@
     ═══════════════════════════════════════ */
     async function asociarPulsera() {
       const dni     = document.getElementById('asoc-dni').value.trim();
-      const pulsera = document.getElementById('asoc-pulsera').value.trim();
+      const pulsera = normalizeId(document.getElementById('asoc-pulsera').value.trim());
 
       if (!dni || !pulsera) { showResult('result-asoc', 'error', 'Ingresá el DNI y el ID de pulsera.'); return; }
 
@@ -568,7 +584,7 @@
             <div class="result-grid">
               <div class="result-item"><div class="r-label">Nombre</div><div class="r-value">${user.nombre} ${user.apellido}</div></div>
               <div class="result-item"><div class="r-label">DNI</div><div class="r-value">${user.dni}</div></div>
-              <div class="result-item"><div class="r-label">ID Pulsera</div><div class="r-value">${pulsera}</div></div>
+              <div class="result-item"><div class="r-label">ID Pulsera (HEX)</div><div class="r-value">${pulsera}</div></div>
             </div>
           `);
           document.getElementById('asoc-dni').value     = '';
@@ -588,7 +604,7 @@
        SECCIÓN 2 — Retiro de kit
     ═══════════════════════════════════════ */
     async function retirarKit() {
-      const pulsera = document.getElementById('kit-pulsera').value.trim();
+      const pulsera = normalizeId(document.getElementById('kit-pulsera').value.trim());
       if (!pulsera)                    { showResult('result-kit', 'error', 'Ingresá el ID de pulsera.'); return; }
       if (!guardCarrera('result-kit')) return;
 
@@ -658,7 +674,7 @@
        SECCIÓN 3 — Ingreso a pista
     ═══════════════════════════════════════ */
     async function registrarIngreso() {
-      const pulsera = document.getElementById('ingreso-pulsera').value.trim();
+      const pulsera = normalizeId(document.getElementById('ingreso-pulsera').value.trim());
       if (!pulsera)                        { showResult('result-ingreso', 'error', 'Ingresá el ID de pulsera.'); return; }
       if (!guardCarrera('result-ingreso')) return;
 
