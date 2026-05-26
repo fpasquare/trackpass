@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TrackPass — Información de Emergencia</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='512' height='512' rx='112' fill='%231D9E75'/%3E%3Cpath d='M128 256 L208 336 L384 176' stroke='white' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='256' cy='256' r='160' stroke='white' stroke-width='18' stroke-dasharray='36 28' fill='none' opacity='0.35'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='512' height='512' rx='112' fill='%231D9E75'/%3E%3Cg transform='rotate(-45 256 256)'%3E%3Crect x='66' y='196' width='380' height='120' rx='28' fill='white'/%3E%3Crect x='186' y='214' width='140' height='84' rx='14' fill='%23b8ece0' opacity='0.7'/%3E%3Ccircle cx='226' cy='242' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Ccircle cx='256' cy='242' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Ccircle cx='286' cy='242' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Ccircle cx='226' cy='270' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Ccircle cx='256' cy='270' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Ccircle cx='286' cy='270' r='11' fill='%231D9E75' opacity='0.5'/%3E%3Cline x1='112' y1='216' x2='112' y2='298' stroke='%231D9E75' stroke-width='12' stroke-dasharray='18 12' opacity='0.5'/%3E%3Cline x1='148' y1='216' x2='148' y2='298' stroke='%231D9E75' stroke-width='12' stroke-dasharray='18 12' opacity='0.5'/%3E%3Cline x1='364' y1='216' x2='364' y2='298' stroke='%231D9E75' stroke-width='12' stroke-dasharray='18 12' opacity='0.5'/%3E%3Cline x1='400' y1='216' x2='400' y2='298' stroke='%231D9E75' stroke-width='12' stroke-dasharray='18 12' opacity='0.5'/%3E%3C/g%3E%3Ccircle cx='256' cy='256' r='160' stroke='white' stroke-width='18' stroke-dasharray='36 28' fill='none' opacity='0.3'/%3E%3C/svg%3E" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -286,8 +286,22 @@
   <header class="header">
     <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="38" height="38" rx="10" fill="#1D9E75"/>
-      <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      <!-- Curita rotada 45° -->
+      <g transform="rotate(-45, 19, 19)">
+        <rect x="5" y="14.5" width="28" height="9" rx="2" fill="white"/>
+        <rect x="14" y="16" width="10" height="6" rx="1" fill="#b8ece0" opacity="0.7"/>
+        <circle cx="17" cy="18" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <circle cx="19" cy="18" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <circle cx="21" cy="18" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <circle cx="17" cy="21" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <circle cx="19" cy="21" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <circle cx="21" cy="21" r="0.8" fill="#1D9E75" opacity="0.5"/>
+        <line x1="8.5" y1="16.5" x2="8.5" y2="21.5" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="1.5 1" opacity="0.5"/>
+        <line x1="11" y1="16.5" x2="11" y2="21.5" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="1.5 1" opacity="0.5"/>
+        <line x1="27" y1="16.5" x2="27" y2="21.5" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="1.5 1" opacity="0.5"/>
+        <line x1="29.5" y1="16.5" x2="29.5" y2="21.5" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="1.5 1" opacity="0.5"/>
+      </g>
+      <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.3"/>
     </svg>
     <span class="logo-text">Track<span>Pass</span></span>
   </header>
@@ -394,7 +408,7 @@
         if (Array.isArray(inscripciones) && inscripciones.length > 0) {
           const ids = inscripciones.map(r => r.id_carrera).join(',');
           const { data: carreras } = await sb(
-            `carreras?id_carrera=in.(${ids})&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad,carrera_activa`
+            `carreras?id_carrera=in.(${ids})&carrera_activa=eq.true&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad`
           );
           const carreraMap = {};
           (carreras || []).forEach(c => { carreraMap[c.id_carrera] = c; });
@@ -405,22 +419,18 @@
               <div class="card">
                 <div class="card-header">
                   <div class="card-header-icon icon-green">🏁</div>
-                  <h3>Carreras inscripto</h3>
+                  <h3>Carrera en curso</h3>
                 </div>
                 ${conCarrera.map(ins => {
                   const c = carreraMap[ins.id_carrera];
                   const fecha = c.fecha_hora_largada
                     ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' })
                     : '—';
-                  const esActiva = c.carrera_activa;
-                  const activaBadge = esActiva
-                    ? '<span style="font-size:10px;font-weight:600;background:#E1F5EE;color:#085041;padding:2px 7px;border-radius:99px;margin-left:6px;">HOY</span>'
-                    : '';
                   return `
                     <div class="carrera-item">
-                      <div class="carrera-dot" style="${esActiva ? '' : 'background:var(--text-3)'}"></div>
+                      <div class="carrera-dot"></div>
                       <div>
-                        <div class="carrera-name">${escH(c.nombre_evento)}${activaBadge}</div>
+                        <div class="carrera-name">${escH(c.nombre_evento)}</div>
                         <div class="carrera-meta">${escH(fecha)}${c.lugar_o_ciudad ? ' · ' + escH(c.lugar_o_ciudad) : ''}${ins.categoria ? ' · ' + escH(ins.categoria) : ''}</div>
                       </div>
                       ${ins.numero_dorsal ? `<div class="dorsal">#${ins.numero_dorsal}</div>` : ''}
