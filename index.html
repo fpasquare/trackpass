@@ -599,8 +599,6 @@
 
 <script>
   /* ── Config ── */
-  const SB_URL = 'https://oaudbbqwlhsjqpcksqif.supabase.co';
-  const SB_KEY = 'sb_publishable_-JeduYoljL3od9nY8--4UA_FX4AaRCs';
   const STORAGE_KEY = 'trackpass_user';
 
   /* ── State ── */
@@ -609,11 +607,11 @@
 
   /* ── Supabase helper ── */
   async function sb(path, opts = {}) {
-    const res = await fetch(SB_URL + '/rest/v1/' + path, {
+    const res = await fetch(process.env.SB_URL + '/rest/v1/' + path, {
       ...opts,
       headers: {
-        'apikey':        SB_KEY,
-        'Authorization': 'Bearer ' + SB_KEY,
+        'apikey':        process.env.SB_KEY,
+        'Authorization': 'Bearer ' + process.env.SB_KEY,
         'Content-Type':  'application/json',
         'Accept':        'application/json',
         'Prefer':        opts.prefer || 'return=representation',
