@@ -607,11 +607,11 @@
 
   /* ── Supabase helper ── */
   async function sb(path, opts = {}) {
-    const res = await fetch(process.env.SB_URL + '/rest/v1/' + path, {
+    const res = await fetch(SB_URL + '/rest/v1/' + path, {
       ...opts,
       headers: {
-        'apikey':        process.env.SB_KEY,
-        'Authorization': 'Bearer ' + process.env.SB_KEY,
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
         'Content-Type':  'application/json',
         'Accept':        'application/json',
         'Prefer':        opts.prefer || 'return=representation',
