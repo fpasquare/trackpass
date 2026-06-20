@@ -362,6 +362,49 @@
     .card .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .card .col-span-2  { grid-column: span 2; }
 
+    /* ─── CONFIG PAGE ─── */
+    .config-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: none; border: none; color: var(--text-2);
+      font-size: 13px; cursor: pointer; font-family: inherit; padding: 6px 0;
+    }
+    .btn-back:hover { color: var(--text); }
+    .btn-icon-cfg {
+      background: none; border: 0.5px solid var(--border-md); border-radius: var(--radius);
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-2); transition: background 0.12s, color 0.12s;
+    }
+    .btn-icon-cfg:hover { background: var(--surface-2); color: var(--text); }
+    .config-section { margin-bottom: 1.5rem; }
+    .config-section-title {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-2); margin-bottom: 10px;
+    }
+
+    /* ─── HISTORIAL ─── */
+    .historial-item {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .historial-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+    .historial-info { flex: 1; min-width: 140px; }
+    .historial-name { font-size: 14px; font-weight: 500; }
+    .historial-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .historial-tiempo {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      background: var(--surface-2); padding: 4px 10px; border-radius: 99px;
+    }
+
     @media (max-width: 500px) {
       .form-grid-2 { grid-template-columns: 1fr; }
       .col-span-2 { grid-column: span 1; }
@@ -505,6 +548,19 @@
         <div class="user-avatar" id="user-avatar">--</div>
         <span id="user-name-header"></span>
       </div>
+      <button class="btn-icon-cfg" onclick="loadHistorial(); showPage('historial')" title="Historial de carreras">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v5h5"/>
+          <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>
+          <path d="M12 7v5l4 2"/>
+        </svg>
+      </button>
+      <button class="btn-icon-cfg" onclick="cargarPerfil(); showPage('config')" title="Configuración">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+        </svg>
+      </button>
       <button class="btn btn-ghost" onclick="doLogout()">Salir</button>
     </div>
   </header>
@@ -527,39 +583,138 @@
       </div>
     </div>
 
-    <!-- Mi perfil / datos de salud -->
+    <!-- Mi perfil de salud (solo lectura) -->
     <div class="mis-inscripciones">
       <div class="section-header">
         <h2>Mi perfil de salud</h2>
-        <p>Estos datos aparecen en tu pulsera NFC en caso de emergencia.</p>
+        <p>Estos datos aparecen en tu pulsera NFC en caso de emergencia. Para editarlos, entrá a Configuración.</p>
       </div>
       <div class="card" style="padding:1.25rem 1.5rem;">
-
-        <!-- Valores actuales -->
-        <div id="perfil-actual" style="margin-bottom:1.25rem; padding-bottom:1.25rem; border-bottom:0.5px solid var(--border);">
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-2);margin-bottom:10px;">Valores actuales</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="perfil-valores">
-            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;">
-              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Apto médico</div>
-              <div id="actual-apto" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
-            </div>
-            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 1;">
-              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Estado apto</div>
-              <div id="apto-status" style="font-size:13px;font-weight:500;">—</div>
-            </div>
-            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
-              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Condiciones médicas</div>
-              <div id="actual-condiciones" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
-            </div>
-            <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
-              <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Alergias</div>
-              <div id="actual-alergias" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
-            </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;">
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Apto médico</div>
+            <div id="actual-apto" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
+          </div>
+          <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;">
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Estado apto</div>
+            <div id="apto-status" style="font-size:13px;font-weight:500;">—</div>
+          </div>
+          <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Condiciones médicas</div>
+            <div id="actual-condiciones" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
+          </div>
+          <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 12px;grid-column:span 2;">
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:3px;">Alergias</div>
+            <div id="actual-alergias" style="font-size:14px;font-weight:500;color:var(--text-3);">—</div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Formulario de edición -->
-        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-2);margin-bottom:10px;">Actualizar</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     HISTORIAL PAGE
+════════════════════════════════════ -->
+<div id="page-historial" class="page">
+
+  <header class="app-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+        <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      </svg>
+      <span class="logo-text">Track<span>Pass</span></span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="app-content">
+    <div class="config-header">
+      <button class="btn-back" onclick="showPage('app')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver
+      </button>
+    </div>
+
+    <div class="section-header">
+      <h2>Historial de carreras</h2>
+      <p>Carreras que ya corriste.</p>
+    </div>
+
+    <div id="historial-container">
+      <div class="empty-state"><p>Cargando...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     CONFIG PAGE
+════════════════════════════════════ -->
+<div id="page-config" class="page">
+
+  <header class="app-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="#1D9E75"/>
+        <path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/>
+      </svg>
+      <span class="logo-text">Track<span>Pass</span></span>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="app-content">
+    <div class="config-header">
+      <button class="btn-back" onclick="showPage('app')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver
+      </button>
+    </div>
+
+    <div class="section-header">
+      <h2>Configuración</h2>
+      <p>Cambiá tu contraseña y actualizá tus datos médicos.</p>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div class="config-section">
+      <div class="config-section-title">Cambiar contraseña</div>
+      <div class="card" style="padding:1.25rem 1.5rem;">
+        <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
+          <div class="field col-span-2">
+            <label>Contraseña actual</label>
+            <input type="password" id="cfg-pass-actual" placeholder="••••••••" />
+          </div>
+          <div class="field">
+            <label>Nueva contraseña</label>
+            <input type="password" id="cfg-pass-nueva" placeholder="Mínimo 6 caracteres" />
+          </div>
+          <div class="field">
+            <label>Confirmar nueva contraseña</label>
+            <input type="password" id="cfg-pass-confirmar" placeholder="Repetir contraseña" />
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:auto;margin-top:4px;" onclick="cambiarPassword()" id="btn-cambiar-pass">Cambiar contraseña</button>
+        <div id="msg-pass" class="msg"></div>
+      </div>
+    </div>
+
+    <!-- Datos médicos -->
+    <div class="config-section">
+      <div class="config-section-title">Datos médicos</div>
+      <div class="card" style="padding:1.25rem 1.5rem;">
         <div class="form-grid-2" style="gap:12px;margin-bottom:12px;">
           <div class="field col-span-2">
             <label>Vencimiento apto médico (dd-mm-aaaa)</label>
@@ -1014,13 +1169,20 @@
         return;
       }
       const ids = data.map(r => r.id_carrera).join(',');
+      /* Solo carreras activas — las que ya pasaron van al Historial */
       const { data: carreras } = await sb(
-        `carreras?id_carrera=in.(${ids})&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad`
+        `carreras?id_carrera=in.(${ids})&carrera_activa=eq.true&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad`
       );
       const carreraMap = {};
       (carreras || []).forEach(c => { carreraMap[c.id_carrera] = c; });
 
-      container.innerHTML = data.map(ins => {
+      const vigentes = data.filter(ins => carreraMap[ins.id_carrera]);
+      if (vigentes.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No tenés inscripciones a carreras activas. Revisá tu Historial.</p></div>';
+        return;
+      }
+
+      container.innerHTML = vigentes.map(ins => {
         const c = carreraMap[ins.id_carrera] || {};
         const fecha = c.fecha_hora_largada
           ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'short', year:'numeric' })
@@ -1239,6 +1401,120 @@
       showMsg('msg-perfil', 'error', 'Error de red: ' + e.message);
     } finally {
       setLoading('btn-perfil', false);
+    }
+  }
+
+  /* ═══════════════════════════════════
+     HISTORIAL DE CARRERAS (carreras ya pasadas / no activas)
+  ═══════════════════════════════════ */
+  async function loadHistorial() {
+    const container = document.getElementById('historial-container');
+    if (!container) return;
+    container.innerHTML = '<div class="empty-state"><p>Cargando...</p></div>';
+    try {
+      const { ok, data } = await sb(
+        `usuarios_x_carrera?id_usuario=eq.${currentUser.id_usuario}&inscripto=eq.true&select=id_carrera,categoria,numero_dorsal,tiempo_llegada`
+      );
+      if (!ok || !Array.isArray(data) || data.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Todavía no corriste ninguna carrera.</p></div>';
+        return;
+      }
+
+      const ids = data.map(r => r.id_carrera).join(',');
+      const { data: carreras } = await sb(
+        `carreras?id_carrera=in.(${ids})&carrera_activa=eq.false&select=id_carrera,nombre_evento,fecha_hora_largada,lugar_o_ciudad`
+      );
+      const carreraMap = {};
+      (carreras || []).forEach(c => { carreraMap[c.id_carrera] = c; });
+
+      const pasadas = data.filter(ins => carreraMap[ins.id_carrera]);
+      if (pasadas.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Todavía no corriste ninguna carrera.</p></div>';
+        return;
+      }
+
+      /* Ordenar por fecha descendente (más reciente primero) */
+      pasadas.sort((a, b) => {
+        const fa = carreraMap[a.id_carrera].fecha_hora_largada || '';
+        const fb = carreraMap[b.id_carrera].fecha_hora_largada || '';
+        return fb.localeCompare(fa);
+      });
+
+      container.innerHTML = pasadas.map(ins => {
+        const c = carreraMap[ins.id_carrera];
+        const fecha = c.fecha_hora_largada
+          ? new Date(c.fecha_hora_largada).toLocaleDateString('es-AR', { day:'numeric', month:'short', year:'numeric' })
+          : '—';
+        const tiempo = ins.tiempo_llegada
+          ? new Date(ins.tiempo_llegada).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
+          : null;
+        return `
+          <div class="historial-item">
+            <div class="historial-dot"></div>
+            <div class="historial-info">
+              <div class="historial-name">${escHtml(c.nombre_evento || '—')}</div>
+              <div class="historial-meta">${escHtml(fecha)} · ${escHtml(c.lugar_o_ciudad || '—')} · ${escHtml(ins.categoria || '—')}</div>
+            </div>
+            ${ins.numero_dorsal ? `<div class="inscripcion-dorsal">#${ins.numero_dorsal}</div>` : ''}
+            ${tiempo ? `<div class="historial-tiempo">⏱ ${tiempo}</div>` : `<div class="historial-tiempo" style="color:var(--text-3);">Sin tiempo</div>`}
+          </div>`;
+      }).join('');
+    } catch (e) {
+      container.innerHTML = `<div class="empty-state"><p>Error: ${e.message}</p></div>`;
+    }
+  }
+
+  /* ═══════════════════════════════════
+     CAMBIAR CONTRASEÑA
+  ═══════════════════════════════════ */
+  async function cambiarPassword() {
+    const actual    = document.getElementById('cfg-pass-actual').value;
+    const nueva     = document.getElementById('cfg-pass-nueva').value;
+    const confirmar = document.getElementById('cfg-pass-confirmar').value;
+
+    if (!actual || !nueva || !confirmar) {
+      showMsg('msg-pass', 'error', 'Completá los tres campos.');
+      return;
+    }
+    if (nueva.length < 6) {
+      showMsg('msg-pass', 'error', 'La nueva contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+    if (nueva !== confirmar) {
+      showMsg('msg-pass', 'error', 'Las contraseñas nuevas no coinciden.');
+      return;
+    }
+
+    const passField = ['contraseña', 'contrasena', 'password', 'pass', 'clave']
+      .find(f => currentUser[f] !== undefined);
+
+    if (!passField || String(currentUser[passField]) !== String(actual)) {
+      showMsg('msg-pass', 'error', 'La contraseña actual no es correcta.');
+      return;
+    }
+
+    setLoading('btn-cambiar-pass', true, 'Guardando...');
+    try {
+      const { ok, data } = await sb(
+        `usuario?id_usuario=eq.${currentUser.id_usuario}`,
+        { method: 'PATCH', body: JSON.stringify({ [passField]: nueva }), prefer: 'return=representation' }
+      );
+      if (ok && Array.isArray(data) && data.length > 0) {
+        currentUser = { ...currentUser, ...data[0] };
+        saveSession(currentUser);
+        document.getElementById('cfg-pass-actual').value     = '';
+        document.getElementById('cfg-pass-nueva').value      = '';
+        document.getElementById('cfg-pass-confirmar').value  = '';
+        showMsg('msg-pass', 'success', 'Contraseña actualizada correctamente.');
+        setTimeout(() => hideMsg('msg-pass'), 3000);
+      } else {
+        const errMsg = typeof data === 'object' ? (data.message || JSON.stringify(data)) : data;
+        showMsg('msg-pass', 'error', 'Error al actualizar: ' + errMsg);
+      }
+    } catch (e) {
+      showMsg('msg-pass', 'error', 'Error de red: ' + e.message);
+    } finally {
+      setLoading('btn-cambiar-pass', false);
     }
   }
 
