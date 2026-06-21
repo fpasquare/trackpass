@@ -1074,6 +1074,24 @@
   async function confirmarInscripcion() {
     if (!selectedRaceId || !currentUser) return;
 
+    /* Verificar apto médico vigente antes de cualquier otra cosa */
+    if (!currentUser.vencimiento_apto_medico) {
+      showMsg('msg-modal', 'error',
+        'No tenés un apto médico registrado. Cargalo en Configuración antes de inscribirte.'
+      );
+      return;
+    }
+    const vencApto = new Date(currentUser.vencimiento_apto_medico);
+    const hoy      = new Date();
+    hoy.setHours(0,0,0,0);
+    if (vencApto < hoy) {
+      const fechaStr = vencApto.toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+      showMsg('msg-modal', 'error',
+        `Tu apto médico está vencido (venció el ${fechaStr}). Actualizalo en Configuración para poder inscribirte.`
+      );
+      return;
+    }
+
     setLoading('btn-confirmar', true, 'Inscribiendo...');
     try {
       /* Verificar inscripción duplicada en esta carrera */
