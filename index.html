@@ -3,51 +3,52 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TrackPass — Gestión inteligente de carreras</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='512' height='512' rx='112' fill='%231D9E75'/%3E%3Cpath d='M128 256 L208 336 L384 176' stroke='white' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='256' cy='256' r='160' stroke='white' stroke-width='18' stroke-dasharray='36 28' fill='none' opacity='0.35'/%3E%3C/svg%3E"/>
+  <title>TrackPass</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='512' height='512' rx='112' fill='%23087F5B'/%3E%3Cpath d='M128 256 L208 336 L384 176' stroke='white' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='256' cy='256' r='160' stroke='white' stroke-width='18' stroke-dasharray='36 28' fill='none' opacity='0.35'/%3E%3C/svg%3E"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --accent:#1D9E75;--accent-hover:#178a64;--accent-dark:#085041;--accent-light:#E1F5EE;
+  --accent:#087F5B;--accent-hover:#056B4D;--accent-dark:#07523C;--accent-light:#D9F3EA;
   --red:#D93025;--red-light:#FDECEA;
-  --bg:#f7f6f3;--surface:#fff;--surface-2:#f1efe8;--surface-3:#e8e6df;
-  --border:rgba(0,0,0,0.09);--border-md:rgba(0,0,0,0.16);
-  --text:#1a1a18;--text-2:#5c5c58;--text-3:#9b9b97;
+  --bg:#F6F8F6;--surface:#FFFFFF;--surface-2:#EDF1EE;--surface-3:#DCE4DF;
+  --border:rgba(13,35,27,0.15);--border-md:rgba(13,35,27,0.28);
+  --text:#17211D;--text-2:#45544D;--text-3:#66746D;
   --radius:12px;--radius-lg:18px;--radius-xl:24px;
   --shadow:0 4px 20px -8px rgba(0,0,0,0.14);
   --shadow-lg:0 20px 50px -20px rgba(0,0,0,0.2);
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#0f0f0e;--surface:#1a1a18;--surface-2:#222220;--surface-3:#2a2a28;
-    --border:rgba(255,255,255,0.07);--border-md:rgba(255,255,255,0.14);
-    --text:#f0ede8;--text-2:#9b9b97;--text-3:#6b6b67;
-    --accent-light:#04342C;--accent-dark:#9FE1CB;
+    --bg:#101614;--surface:#18201D;--surface-2:#232D28;--surface-3:#344039;
+    --border:rgba(235,255,246,0.18);--border-md:rgba(235,255,246,0.34);
+    --text:#F1F7F3;--text-2:#C4CEC8;--text-3:#A0ADA6;
+    --accent-light:#103D30;--accent-dark:#A9EBD4;
     --shadow:0 4px 20px -8px rgba(0,0,0,0.4);
     --shadow-lg:0 20px 50px -20px rgba(0,0,0,0.5);
   }
 }
 html{scroll-behavior:smooth;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip;}
 a{color:inherit;text-decoration:none;}
 img{display:block;max-width:100%;height:auto;}
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:4px;}
 
 /* ── NAV ── */
 nav{
   position:sticky;top:0;z-index:100;
-  padding:0 max(1.5rem,calc(50% - 560px));height:66px;
+  padding:0 max(1.5rem,calc((100vw - 1120px) / 2));min-height:76px;
   display:flex;align-items:center;gap:12px;
-  background:rgba(247,246,243,0.88);backdrop-filter:blur(14px);
-  border-bottom:0.5px solid var(--border);
+  background:rgba(246,248,246,0.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
   transition:box-shadow .2s;
 }
-@media(prefers-color-scheme:dark){nav{background:rgba(15,15,14,0.88);}}
-.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;}
-.logo-icon{width:32px;height:32px;}
-.logo-text{font-size:18px;font-weight:700;letter-spacing:-0.4px;color:var(--text);}
+@media(prefers-color-scheme:dark){nav{background:rgba(16,22,20,0.92);}}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-icon{width:38px;height:38px;}
+.logo-text{font-size:21px;font-weight:750;letter-spacing:-0.6px;color:var(--text);}
 .logo-text em{color:var(--accent);font-style:normal;}
-.nav-links{margin-left:auto;display:flex;align-items:center;gap:24px;}
-.nav-links a{font-size:14px;color:var(--text-2);transition:color .15s;}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:28px;}
+.nav-links a{font-size:15px;font-weight:600;color:var(--text-2);transition:color .15s;}
 .nav-links a:hover{color:var(--text);}
 .nav-cta{
   background:var(--accent);color:#fff!important;
@@ -55,15 +56,22 @@ nav{
   transition:background .15s,transform .1s;
 }
 .nav-cta:hover{background:var(--accent-hover);transform:translateY(-1px);}
-@media(max-width:720px){.nav-links a:not(.nav-cta){display:none;}}
+@media(max-width:860px){.nav-links{gap:18px;}.nav-links a{font-size:14px;}}
+@media(max-width:680px){
+  nav{padding:12px clamp(1.25rem,5vw,1.75rem);flex-wrap:wrap;gap:8px;}
+  .nav-links{width:100%;min-width:0;margin-left:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;}
+  .nav-links a{padding:4px 0;font-size:13px;text-align:center;white-space:nowrap;}
+}
+@media(max-width:400px){.nav-links a{font-size:12px;}}
 
 /* ── LAYOUT ── */
-.wrapper{max-width:1120px;margin:0 auto;padding:0 1.5rem;}
+.wrapper{max-width:1184px;margin:0 auto;padding:0 clamp(1.25rem,4vw,2rem);}
 
 /* ── HERO ── */
-.hero{padding:7rem 0 5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.hero{padding:7rem 0 5rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4rem;align-items:center;}
+.hero > *,.what-grid > *,.layers-grid > *,.contact-grid > *{min-width:0;}
 @media(max-width:860px){
-  .hero{grid-template-columns:1fr;padding:4rem 0 3rem;text-align:center;gap:2.5rem;}
+  .hero{grid-template-columns:minmax(0,1fr);padding:4rem 0 3rem;text-align:center;gap:2.5rem;}
   .hero-img{order:-1;}
 }
 .hero-pill{
@@ -72,7 +80,7 @@ nav{
   font-size:12px;font-weight:600;padding:5px 14px;border-radius:99px;margin-bottom:1.25rem;
 }
 .hero-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
-h1{font-size:52px;font-weight:800;letter-spacing:-1.8px;line-height:1.04;margin-bottom:1.25rem;}
+h1{font-size:clamp(2.5rem,4.5vw,52px);font-weight:800;letter-spacing:-1.8px;line-height:1.04;margin-bottom:1.25rem;overflow-wrap:anywhere;}
 h1 em{color:var(--accent);font-style:normal;}
 .hero p{font-size:18px;color:var(--text-2);max-width:500px;margin-bottom:2.25rem;line-height:1.6;}
 @media(max-width:860px){.hero p{margin:0 auto 2rem;}}
@@ -87,21 +95,22 @@ h1 em{color:var(--accent);font-style:normal;}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 8px 24px -8px rgba(29,158,117,.5);}
 .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border-md);}
 .btn-secondary:hover{background:var(--surface-2);}
-.hero-img img{border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:100%;}
+.hero-img{padding:clamp(1.25rem,3vw,2.25rem);border-radius:var(--radius-xl);background:radial-gradient(circle at 50% 34%,#ffffff 0%,#E3F2EC 58%,#B9DCCD 100%);border:1px solid rgba(7,82,60,.18);box-shadow:var(--shadow-lg);}
+.hero-img img{border-radius:calc(var(--radius-xl) - 6px);width:100%;filter:drop-shadow(0 18px 14px rgba(0,0,0,.28));}
 
 /* ── SECTION BASE ── */
 .section{padding:6rem 0;}
 .eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
-h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
+h2{font-size:clamp(2rem,3vw,36px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
 .section-desc{font-size:17px;color:var(--text-2);max-width:580px;margin-bottom:3rem;line-height:1.6;}
 .text-center{text-align:center;}
 .text-center .section-desc{margin-left:auto;margin-right:auto;}
 
 /* ── PROBLEMA / SOLUCIÓN ── */
-.problems-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:1rem;}
-@media(max-width:720px){.problems-grid{grid-template-columns:1fr;}}
+.problems-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2rem;margin-bottom:1rem;}
+@media(max-width:720px){.problems-grid{grid-template-columns:minmax(0,1fr);}}
 .problem-card{
-  background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;
   display:flex;gap:16px;align-items:flex-start;
 }
 .problem-icon{
@@ -123,9 +132,17 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 .solution-num{font-size:32px;font-weight:800;opacity:.25;line-height:1;margin-bottom:4px;}
 
 /* ── QUÉ ES ── */
-.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
-@media(max-width:860px){.what-grid{grid-template-columns:1fr;gap:2rem;}}
-.what-grid img{border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);}
+.what-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4rem;align-items:center;}
+@media(max-width:860px){.what-grid{grid-template-columns:minmax(0,1fr);gap:2rem;}}
+.brand-panel{
+  min-height:390px;padding:clamp(2rem,5vw,4rem);border-radius:var(--radius-xl);
+  background:linear-gradient(145deg,var(--accent-light),var(--surface));border:1px solid var(--border-md);
+  box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;gap:1.5rem;
+}
+.brand-panel .logo{gap:16px;}
+.brand-panel .logo-icon{width:64px;height:64px;}
+.brand-panel .logo-text{font-size:clamp(2rem,4vw,3.25rem);letter-spacing:-1.5px;line-height:1;}
+.brand-panel p{max-width:360px;font-size:16px;color:var(--text-2);line-height:1.6;}
 .feature-list{display:flex;flex-direction:column;gap:1.25rem;}
 .feature-item{display:flex;gap:14px;align-items:flex-start;}
 .feature-item-icon{
@@ -137,10 +154,10 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 
 /* ── CÓMO FUNCIONA ── */
 .bg-surface{background:var(--surface);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);}
-.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
-@media(max-width:860px){.flow-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:520px){.flow-grid{grid-template-columns:1fr;}}
-.flow-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;}
+.flow-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.25rem;}
+@media(max-width:860px){.flow-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}}
+@media(max-width:520px){.flow-grid{grid-template-columns:minmax(0,1fr);}}
+.flow-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;}
 .flow-step{
   display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:50%;background:var(--accent);
@@ -150,8 +167,8 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 .flow-card p{font-size:13.5px;color:var(--text-2);}
 
 /* ── PULSERA DESPIECE ── */
-.layers-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
-@media(max-width:860px){.layers-grid{grid-template-columns:1fr;gap:2rem;}}
+.layers-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4rem;align-items:center;}
+@media(max-width:860px){.layers-grid{grid-template-columns:minmax(0,1fr);gap:2rem;}}
 .layers-grid img{border-radius:var(--radius-xl);}
 .layer-list{display:flex;flex-direction:column;gap:1.25rem;}
 .layer-item{display:flex;gap:14px;}
@@ -180,8 +197,8 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 @media(max-width:760px){.e-items{align-items:center;}}
 
 /* ── CONTACTO ── */
-.contact-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:4rem;align-items:start;}
-@media(max-width:860px){.contact-grid{grid-template-columns:1fr;gap:2.5rem;}}
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:4rem;align-items:start;}
+@media(max-width:860px){.contact-grid{grid-template-columns:minmax(0,1fr);gap:2.5rem;}}
 .contact-info h2{margin-bottom:14px;}
 .contact-info p{font-size:16px;color:var(--text-2);margin-bottom:2rem;line-height:1.6;}
 .contact-detail{display:flex;gap:14px;align-items:center;margin-bottom:1rem;}
@@ -193,7 +210,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 .contact-detail strong{display:block;font-size:15px;color:var(--text);}
 
 .contact-form{
-  background:var(--surface);border:0.5px solid var(--border);
+  background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius-xl);padding:2rem;box-shadow:var(--shadow);
 }
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -206,7 +223,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
   outline:none;width:100%;font-family:inherit;transition:border-color .15s,box-shadow .15s;
   resize:vertical;
 }
-.field input:focus,.field select,.field textarea:focus{
+.field input:focus,.field select:focus,.field textarea:focus{
   border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,158,117,.12);
 }
 .field input::placeholder,.field textarea::placeholder{color:var(--text-3);}
@@ -225,6 +242,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 .footer-links a{font-size:13px;color:var(--text-3);transition:color .15s;}
 .footer-links a:hover{color:var(--text-2);}
 .footer-copy{font-size:13px;color:var(--text-3);}
+@media(max-width:680px){.footer-inner{padding:2rem 0;align-items:flex-start;flex-direction:column;}.footer-links{gap:12px 18px;}}
 </style>
 </head>
 <body>
@@ -232,7 +250,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 <!-- NAV -->
 <nav>
   <a class="logo" href="#top">
-    <svg class="logo-icon" viewBox="0 0 38 38" fill="none"><rect width="38" height="38" rx="10" fill="#1D9E75"/><path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/></svg>
+    <svg class="logo-icon" viewBox="0 0 38 38" fill="none"><rect width="38" height="38" rx="10" fill="#087F5B"/><path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/></svg>
     <span class="logo-text">Track<em>Pass</em></span>
   </a>
   <div class="nav-links">
@@ -249,7 +267,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
     <div>
       <div class="hero-pill"><span class="dot"></span>Sistema de gestión de carreras</div>
       <h1>Corré más.<br/><em>Organizá mejor.</em></h1>
-      <p>TrackPass conecta a corredores, organizadores y equipos médicos en una sola plataforma — con una pulsera NFC que lo hace todo: inscripción, acceso y emergencia.</p>
+      <p>TrackPass conecta a corredores, organizadores y equipos médicos en una sola plataforma, con una pulsera NFC que lo hace todo: inscripción, acceso y emergencia.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#que-es">Conocer más</a>
         <a class="btn btn-secondary" href="#contacto">Contacto</a>
@@ -265,7 +283,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 <div class="wrapper section">
   <div class="eyebrow">El problema</div>
   <h2>Organizar una carrera es complicado.<br/>No debería serlo.</h2>
-  <p class="section-desc">La gestión tradicional de eventos deportivos viene con fricciones en cada paso — desde la inscripción hasta el ingreso a la pista.</p>
+  <p class="section-desc">La gestión tradicional de eventos deportivos viene con fricciones en cada paso, desde la inscripción hasta el ingreso a la pista.</p>
 
   <div class="problems-grid">
     <div class="problem-card">
@@ -307,7 +325,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
     <div class="solution-card">
       <div class="solution-num">02</div>
       <h4>Control por NFC</h4>
-      <p>Retiro de kit e ingreso a la pista con un simple escaneo de la pulsera — rápido, sin errores, con registro automático.</p>
+      <p>Retiro de kit e ingreso a la pista con un simple escaneo de la pulsera: rápido, sin errores y con registro automático.</p>
     </div>
     <div class="solution-card">
       <div class="solution-num">03</div>
@@ -321,7 +339,13 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 <div class="bg-surface" id="que-es">
   <div class="wrapper section">
     <div class="what-grid">
-      <img src="logo-trackpass.png" alt="Logo TrackPass"/>
+      <div class="brand-panel" aria-label="TrackPass, gestión inteligente de carreras">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 38 38" fill="none" aria-hidden="true"><rect width="38" height="38" rx="10" fill="#087F5B"/><path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/></svg>
+          <span class="logo-text">Track<em>Pass</em></span>
+        </div>
+        <p>Gestión inteligente para carreras, desde la inscripción hasta el cuidado de cada corredor.</p>
+      </div>
       <div>
         <div class="eyebrow">Qué es TrackPass</div>
         <h2>Una plataforma. Una pulsera.<br/>Todo resuelto.</h2>
@@ -351,7 +375,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
             </div>
             <div>
               <h4>Para el equipo médico</h4>
-              <p>Información de emergencia accesible con cualquier celular, sin app, sin contraseña — solo acercando el teléfono.</p>
+              <p>Información de emergencia accesible con cualquier celular, sin app ni contraseña: solo acercando el teléfono.</p>
             </div>
           </div>
         </div>
@@ -381,7 +405,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
     <div class="flow-card">
       <div class="flow-step">3</div>
       <h4>Retiro del kit</h4>
-      <p>El día del evento escanea su pulsera NFC — la organización valida el pago y entrega el kit en segundos.</p>
+      <p>El día del evento escanea su pulsera NFC. La organización valida el pago y entrega el kit en segundos.</p>
     </div>
     <div class="flow-card">
       <div class="flow-step">4</div>
@@ -402,7 +426,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
         <p class="section-desc" style="margin-bottom:2rem;">Una cápsula resistente con tecnología NFC y RFID, montada sobre una correa tipo NATO. Liviana, cómoda y reutilizable carrera a carrera.</p>
         <div class="layer-list">
           <div class="layer-item"><div class="layer-num">1</div><div><h4>Tapa de la cápsula</h4><p>Cubierta exterior resistente con el logo TrackPass, protege el tag de golpes y humedad.</p></div></div>
-          <div class="layer-item"><div class="layer-num">2</div><div><h4>Tag NFC — NTAG215</h4><p>Almacena el link a la página de emergencia del corredor. Cualquier celular moderno puede leerlo sin app.</p></div></div>
+          <div class="layer-item"><div class="layer-num">2</div><div><h4>Tag NFC: NTAG215</h4><p>Almacena el link a la página de emergencia del corredor. Cualquier celular moderno puede leerlo sin app.</p></div></div>
           <div class="layer-item"><div class="layer-num">3</div><div><h4>Tag RFID UHF</h4><p>Lectura a distancia para control de acceso y cronometraje en los puntos de la carrera.</p></div></div>
           <div class="layer-item"><div class="layer-num">4</div><div><h4>Base de la cápsula</h4><p>Estructura interna que sostiene ambos tags y se ensambla con la tapa, fijada a la correa.</p></div></div>
           <div class="layer-item"><div class="layer-num">5</div><div><h4>Correa NATO</h4><p>Ajustable, resistente al agua y al sudor. Pensada para uso deportivo prolongado.</p></div></div>
@@ -417,7 +441,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
   <div class="emergency-card">
     <div>
       <h3>En una emergencia,<br/>cada segundo importa.</h3>
-      <p>Cualquier socorrista, médico o voluntario puede acercar su celular a la pulsera y acceder de inmediato a la información crítica del corredor — sin apps, sin contraseñas, sin demoras.</p>
+      <p>Cualquier socorrista, médico o voluntario puede acercar su celular a la pulsera y acceder de inmediato a la información crítica del corredor, sin apps, contraseñas ni demoras.</p>
     </div>
     <div class="e-items">
       <div class="e-item">🩸 Grupo sanguíneo</div>
@@ -442,7 +466,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
           <div class="contact-detail-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
-          <div><span>Institución</span><strong>ITBA — Instituto Tecnológico de Buenos Aires</strong></div>
+          <div><span>Institución</span><strong>ITBA, Instituto Tecnológico de Buenos Aires</strong></div>
         </div>
       </div>
 
@@ -483,7 +507,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
 <div class="wrapper">
   <div class="footer-inner">
     <a class="logo" href="#top">
-      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" width="26" height="26"><rect width="38" height="38" rx="10" fill="#1D9E75"/><path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/></svg>
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" width="26" height="26"><rect width="38" height="38" rx="10" fill="#087F5B"/><path d="M10 19 L16 25 L28 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="19" r="10" stroke="white" stroke-width="1.5" stroke-dasharray="3 3" fill="none" opacity="0.4"/></svg>
       <span class="logo-text">Track<em>Pass</em></span>
     </a>
     <div class="footer-links">
@@ -492,7 +516,7 @@ h2{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bot
       <a href="#pulsera">La pulsera</a>
       <a href="#contacto">Contacto</a>
     </div>
-    <span class="footer-copy">© 2025 TrackPass. Buenos Aires, Argentina.</span>
+    <span class="footer-copy">© 2026 TrackPass. Buenos Aires, Argentina.</span>
   </div>
 </div>
 
